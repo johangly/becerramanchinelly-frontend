@@ -4,6 +4,7 @@ import type { AppointmentInterface } from '../types';
 import { motion,AnimatePresence } from 'motion/react';
 import { apiClient } from '../api/index';
 import toast from 'react-hot-toast';
+import { twMerge } from 'tailwind-merge';
 
 const AdminApp = () => {
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
@@ -20,16 +21,46 @@ const AdminApp = () => {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const dayNames = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+    // Obtener las fechas de la semana actual
+    const getCurrentWeekDates = () => {
+        const today = new Date(); // Usando la fecha fija para consistencia
+        const currentDay = today.getDay(); // 0 (domingo) a 6 (sábado)
+        const currentDate = today.getDate();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        // Ajustar para que la semana empiece en lunes (1) en lugar de domingo (0)
+        const firstDayOfWeek = currentDate - (currentDay === 0 ? 6 : currentDay - 1);
+        
+        const weekDays = [
+            'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'
+        ];
+        
+        // Crear arreglo con los días y sus fechas
+        return weekDays.map((day, index) => {
+            const dayDate = new Date(currentYear, currentMonth, firstDayOfWeek + index);
+            const dayNumber = dayDate.getDate();
+            const month = dayDate.toLocaleString('es-ES', { month: 'short' }).toUpperCase().replace('.', '');
+            dayDate.setHours(12, 0, 0, 0)
+            return {
+                name: day,
+                date: dayNumber,
+                month: month,
+                fullDate: dayDate
+            };
+        });
+    };
+    
+    const dayNames = getCurrentWeekDates();
+    // console.log('dayNames', dayNames);
 
     // Cargar citas al montar el componente
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
-                console.log('apiClient', apiClient);
                 const response = await apiClient.get('/appointments');
                 if(response.statusText === 'OK'){
-                    console.log('response', response);
+                    // console.log('appointments', response.data);
                     setAppointments(response.data.appointments);
                     setLoading(false);
                 }else{
@@ -102,10 +133,11 @@ const AdminApp = () => {
                 }
             } else {
                 // Agregar un nuevo horario
+                // console.log('appointmentData', appointmentData)
                 const response = await apiClient.post('/appointments', appointmentData);
                 if (response.status === 201) {
                     toast.success('Horario guardado exitosamente');
-                    setAppointments([...appointments, response.data]);
+                    setAppointments([...appointments, response.data.newAppointment]);
                     closeCustomModal();
                 }
             }
@@ -187,6 +219,7 @@ const AdminApp = () => {
         
         const nextWeek = new Date(pendingDate);
         nextWeek.setDate(nextWeek.getDate() + 7);
+        nextWeek.setHours(12, 0, 0, 0)
         
         setFormData(prev => ({
             ...prev,
@@ -199,42 +232,32 @@ const AdminApp = () => {
         setShowModal(true);
     };
 
-    const openAddModal = (dayName: string) => {
+    const openAddModal = ({ name, date, month, fullDate }: { name: string; date: number; month: string; fullDate: Date }) => {
         // Mapeo de días de la semana (0: Domingo, 1: Lunes, ..., 6: Sábado)
         const weekDays = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
         
+        // Extraer el nombre del día si es un objeto
+        const dayString = name;
+        
         // Obtener el índice del día seleccionado (0-6)
-        const selectedDayIndex = weekDays.findIndex(d => d === dayName.toUpperCase());
+        const selectedDayIndex = weekDays.findIndex(d => d === dayString.toUpperCase());
         
         if (selectedDayIndex === -1) {
             toast.error('Día de la semana no válido');
             return;
         }
         
-        const today = new Date('2025-09-08');
-        const selectedDate = new Date();
-        
-        // Calcular el próximo día de la semana seleccionado
-        const todayDayIndex = today.getDay(); // 0 (domingo) a 6 (sábado)
-        let daysToAdd = selectedDayIndex - todayDayIndex;
-        
-        // Si el día seleccionado ya pasó esta semana, ir a la próxima semana
-        if (daysToAdd <= 0) {
-            daysToAdd += 7;
-        }
-        
-        selectedDate.setDate(today.getDate() + daysToAdd);
-        selectedDate.setHours(12, 0, 0, 0); // Establecer a mediodía para evitar problemas de zona horaria
-        
-        // Verificar si la fecha calculada es hoy o en el futuro
+        const today = new Date();
+        const selectedDate = fullDate;
+        console.log('selectedDate', selectedDate)
+        console.log('today', today)
+        console.log('selectedDate < today =', selectedDate < today)
         if (selectedDate < today) {
-            // Si la fecha ya pasó, mostrar modal de confirmación para la próxima semana
             setPendingDate(selectedDate);
             setShowConfirmModal(true);
             return;
         }
-        
-        // Si la fecha es futura, proceder normalmente
+
         setFormData({
             id: 0,
             day: selectedDate,
@@ -247,7 +270,7 @@ const AdminApp = () => {
         setEditingId(null);
         setShowModal(true);
     };
-    console.log('appointments', appointments)
+    // console.log('appointments', appointments)
     return (
         <div className="p-4">
             {loading ? (
@@ -300,7 +323,7 @@ const AdminApp = () => {
                                         <select
                                             name="status"
                                             value={formData.status}
-                                            // onChange={handleInputChange}
+                                            onChange={handleInputChange}
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                                             required
                                         >
@@ -352,67 +375,105 @@ const AdminApp = () => {
                             Horarios Existentes
                         </motion.h2>
                         <div className="flex flex-col md:flex-row gap-4 pb-4">
-                            {dayNames.map((day,index) => (
+                            {dayNames.map((day, index) => (
                                 <motion.div 
                                     initial={{y: -100, opacity: 0 }} 
                                     animate={{ y: 0,opacity: 1 }} 
                                     exit={{ y: -100,opacity: 0 }} 
                                     transition={{ duration: 0.3, delay: index * 0.1, type: 'spring', stiffness: 100 }} 
-                                    key={day} 
-                                    className="flex-1 min-w-[100px] bg-white rounded-lg shadow-md p-4"
+                                    key={`${day.name}-${index}`} 
+                                    className="flex-1 min-w-[100px] p-4"
                                 >
                                     <div className="flex flex-col space-y-2 justify-between items-center mb-4">
-                                        <h3 className="text-xl font-bold text-center text-gray-700">{day}</h3>
-                                        <button
+                                        <div className="text-center">
+                                            <h3 className="text-lg font-bold text-gray-700">{day.name}</h3>
+                                            <p className="text-sm text-gray-500">
+                                                {day.date} {day.month}
+                                            </p>
+                                        </div>
+                                        <motion.button
+                                            initial={{scale:1, opacity: 0 }} 
+                                            animate={{ scale: 1,opacity: 1 }} 
+                                            exit={{ scale: 1,opacity: 0 }} 
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            transition={{ duration: 0.2, type: 'spring', stiffness: 100 }} 
                                             onClick={() => openAddModal(day)}
-                                            className="p-2 rounded-md w-full flex justify-center items-center bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                                            aria-label={`Agregar horario para ${day}`}
+                                            className="p-2 w-full flex justify-center items-center bg-blue-500 text-white hover:bg-blue-600 transition-colors mt-2 rounded-md cursor-pointer"
+                                            aria-label={`Agregar horario para ${day.name}`}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                                             </svg>
-                                        </button>
+                                        </motion.button>
                                     </div>
                                     {appointments && appointments.filter(appt => {
-                                        const apptDay = new Date(appt.day).toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
-                                        return apptDay === day.toUpperCase();
+                                        const apptDate = new Date(appt.day);
+                                        const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
+                                        const targetDay = typeof day === 'string' ? day : day.name;
+                                        
+                                        if (typeof day === 'string') {
+                                            const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
+                                            return apptDay === targetDay.toUpperCase();
+                                        }
+                                        
+                                        return (
+                                            apptDate.getDate() === day.date &&
+                                            apptDate.getMonth() === targetDate.getMonth() &&
+                                            apptDate.getFullYear() === targetDate.getFullYear()
+                                        );
                                     }).length === 0 ? (
                                         <p className="text-center text-gray-400 text-sm">No hay horarios.</p>
                                     ) : (
                                         <ul className="space-y-3">
                                             {appointments
                                                 .filter(appt => {
-                                                    const apptDay = new Date(appt.day).toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
-                                                    return apptDay === day.toUpperCase();
+                                                    const apptDate = new Date(appt.day);
+                                                    const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
+                                                    const targetDay = typeof day === 'string' ? day : day.name;
+                                                    
+                                                    if (typeof day === 'string') {
+                                                        const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
+                                                        return apptDay === targetDay.toUpperCase();
+                                                    }
+                                                    
+                                                    return (
+                                                        apptDate.getDate() === day.date &&
+                                                        apptDate.getMonth() === targetDate.getMonth() &&
+                                                        apptDate.getFullYear() === targetDate.getFullYear()
+                                                    );
                                                 })
                                                 .map((appt, idx) => (
-                                                    <li key={idx} className="bg-gray-50 p-3 rounded-lg">
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <span className="font-medium">
-                                                                {appt.start_time} - {appt.end_time}
-                                                            </span>
-                                                            <span className={`px-2 py-1 text-xs rounded-full ${
-                                                                appt.status === 'disponible' ? 'bg-green-100 text-green-800' :
-                                                                appt.status === 'reservado' ? 'bg-yellow-100 text-yellow-800' :
-                                                                'bg-gray-100 text-gray-800'
-                                                            }`}>
-                                                                {appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}
+                                                    <li key={idx} className="bg-gray-200 text-black p-3 pb-6 rounded-md shadow-md relative">
+                                                        <div className="flex justify-between items-center mt-2 mb-4">
+                                                            <span className="font-medium text-center w-full">
+                                                                {appt.start_time.split(':').slice(0, 2).join(':')} - {appt.end_time.split(':').slice(0, 2).join(':')}
                                                             </span>
                                                         </div>
-                                                        <div className="w-full flex justify-between items-center text-sm">
+                                                        <div className="w-full flex flex-col justify-between space-y-2 items-center text-sm">
                                                             <button
                                                                 onClick={() => handleEdit(appt)}
-                                                                className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                                className="text-blue-700 hover:text-blue-800 transition-colors cursor-pointer bg-blue-200 p-1 w-full rounded-sm"
                                                             >
                                                                 Editar
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(appt.id)}
-                                                                className="text-red-600 hover:text-red-800 transition-colors"
+                                                                className="text-red-700 hover:text-red-800 transition-colors cursor-pointer bg-red-200 p-1 w-full rounded-sm"
                                                             >
                                                                 Eliminar
                                                             </button>
                                                         </div>
+                                                        <span className={twMerge(
+                                                                'px-2 py-1 w-[100px] text-center text-xs rounded-full absolute top-1/1 left-1/2 translate-y-[-50%] translate-x-[-50%] shadow-md',
+                                                                appt.status === 'disponible' && 'bg-green-100 text-green-800',
+                                                                appt.status === 'reservado' && 'bg-yellow-100 text-yellow-800',
+                                                                appt.status === 'completado' && 'bg-blue-100 text-blue-800',
+                                                                appt.status === 'cancelado' && 'bg-red-100 text-red-800',
+                                                                !['disponible', 'reservado', 'completado', 'cancelado'].includes(appt.status) && 'bg-gray-100 text-gray-800'
+                                                            )}>
+                                                                {appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}
+                                                            </span>
                                                     </li>
                                                 ))}
                                         </ul>
@@ -428,7 +489,7 @@ const AdminApp = () => {
             <AnimatePresence>
                 {showConfirmModal && (
                     <motion.div 
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
