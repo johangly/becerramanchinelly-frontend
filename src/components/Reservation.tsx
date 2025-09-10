@@ -1,36 +1,53 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { AppointmentInterface } from '../types';
-import { motion,AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { apiClient } from '../api/index';
 import toast from 'react-hot-toast';
 import { twMerge } from 'tailwind-merge';
+import {
+  format,
+  parseISO,
+  startOfWeek,
+  addDays,
+  isSameDay,
+  setHours,
+  setMinutes,
+  addMinutes,
+  set
+} from 'date-fns';
+
+import { es } from 'date-fns/locale';
+import { TZDate } from "@date-fns/tz";
+
+const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
 const AdminApp = () => {
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
     const [formData, setFormData] = useState<AppointmentInterface>({
         id: 0,
-        day: new Date(),
+        day: new TZDate(new Date(), ZONE),
         start_time: '',
         end_time: '',
         reservation: 0,
-        reservation_date: new Date(),
+        reservation_date: null,
         status: 'disponible'
     });
-
+    const localUserTime = new TZDate(new Date(), ZONE);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
-
     // Obtener las fechas de la semana actual
     const getCurrentWeekDates = () => {
-        const today = new Date(); // Usando la fecha fija para consistencia
-        const currentDay = today.getDay(); // 0 (domingo) a 6 (sábado)
-        const currentDate = today.getDate();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
+        let today = new TZDate(new Date(), ZONE);
         
-        // Ajustar para que la semana empiece en lunes (1) en lugar de domingo (0)
-        const firstDayOfWeek = currentDate - (currentDay === 0 ? 6 : currentDay - 1);
+        const isSunday = today.getDay() === 0;
+
+        // Si es domingo, se ajusta a lunes
+        if(isSunday){
+            today = addDays(today, 1);
+        }
+        
+        const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 }); // Lunes como primer día de la semana
         
         const weekDays = [
             'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'
@@ -38,21 +55,30 @@ const AdminApp = () => {
         
         // Crear arreglo con los días y sus fechas
         return weekDays.map((day, index) => {
-            const dayDate = new Date(currentYear, currentMonth, firstDayOfWeek + index);
-            const dayNumber = dayDate.getDate();
-            const month = dayDate.toLocaleString('es-ES', { month: 'short' }).toUpperCase().replace('.', '');
-            dayDate.setHours(12, 0, 0, 0)
+            const dayDate = addDays(startOfCurrentWeek, index);
+            const dayNumber = parseInt(format(dayDate, 'd'), 10); // Obtener el día del mes como número
+            const month = format(dayDate, 'MMM', { locale: es }).toUpperCase();
+            
+            // Establecer la hora al final del día (23:59:59.999)
+            const dateWithTime = set(dayDate, {
+                hours: 23,
+                minutes: 59,
+                seconds: 59,
+                milliseconds: 999
+              });
+            
             return {
                 name: day,
                 date: dayNumber,
                 month: month,
-                fullDate: dayDate
+                fullDate: dateWithTime
             };
         });
     };
     
     const dayNames = getCurrentWeekDates();
-    // console.log('dayNames', dayNames);
+
+    console.log('dayNames', dayNames);
 
     // Cargar citas al montar el componente
     useEffect(() => {
@@ -82,43 +108,47 @@ const AdminApp = () => {
         
         // Si es el campo de fecha, convertir a objeto Date
         if (name === 'day') {
-            const dateValue = new Date(value);
+            const dateValue = parseISO(value);
             setFormData(prev => ({
                 ...prev,
                 [name]: dateValue,
             }));
             return;
         }
-        setFormData({ ...formData, [name]: value });
+        setFormData(prev => ({ ...prev, [name]: value }));
 
         // Lógica para establecer la hora de finalización automáticamente
         if (name === 'start_time' && value && !editingId) {
             const [hours, minutes] = value.split(':').map(Number);
-            const newMinutes = minutes + 30;
-            const newHours = hours + 1 + Math.floor(newMinutes / 60);
-            const finalMinutes = newMinutes % 60;
-
-            const formattedHours = String(newHours).padStart(2, '0');
-            const formattedMinutes = String(finalMinutes).padStart(2, '0');
-
-            setFormData(prevData => ({
-                ...prevData,
+            const startDate = new Date();
+            const dateWithTime = setHours(
+                setMinutes(startDate, minutes),
+                hours
+            );
+            
+            // Agregar 1 hora y 30 minutos
+            const endDate = addMinutes(dateWithTime, 90);
+            
+            setFormData(prev => ({
+                ...prev,
                 start_time: value,
-                end_time: `${formattedHours}:${formattedMinutes}`
+                end_time: format(endDate, 'HH:mm')
             }));
+            return;
         }
     };
 
     const handleAddOrUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // Asegurarse de que las fechas sean objetos Date válidos
+
+            const dayDate = formData.day ? new TZDate(formData.day, ZONE) : new TZDate(new Date(), ZONE);
             // Preparar los datos para enviar al backend
             const appointmentData = {
                 ...formData,
-                // Asegurarse de que day sea una cadena en formato YYYY-MM-DD
-                day: formData.day instanceof Date 
-                    ? formData.day.toISOString().split('T')[0]
-                    : formData.day,
+                // Formatear la fecha como YYYY-MM-DD
+                day: format(dayDate, 'yyyy-MM-dd'),
             };
 
             if (editingId) {
@@ -145,11 +175,11 @@ const AdminApp = () => {
             // Resetear el formulario
             setFormData({
                 id: 0,
-                day: new Date(),
+                day: new TZDate(new Date(), ZONE),
                 start_time: '',
                 end_time: '',
                 reservation: 0,
-                reservation_date: new Date(),
+                reservation_date: null,
                 status: 'disponible'
             });
             setEditingId(null);
@@ -166,7 +196,7 @@ const AdminApp = () => {
         setFormData({
             id: appointment.id,
             day: typeof appointment.day === 'string' 
-                ? new Date(appointment.day) 
+                ? new TZDate(new Date(appointment.day), ZONE) 
                 : appointment.day,
             start_time: appointment.start_time,
             end_time: appointment.end_time,
@@ -204,11 +234,11 @@ const AdminApp = () => {
         setShowModal(false);
         setFormData({
             id: 0,
-            day: new Date(),
+            day: new TZDate(new Date(), ZONE),
             start_time: '',
             end_time: '',
             reservation: 0,
-            reservation_date: new Date(),
+            reservation_date: null,
             status: 'disponible' as const
         });
         setEditingId(null);
@@ -223,7 +253,7 @@ const AdminApp = () => {
         
         setFormData(prev => ({
             ...prev,
-            day: nextWeek,
+            day: new TZDate(nextWeek, ZONE),
             reservation_date: null
         }));
         
@@ -247,8 +277,8 @@ const AdminApp = () => {
             return;
         }
         
-        const today = new Date();
-        const selectedDate = fullDate;
+        const today = new TZDate(new Date(), ZONE);
+        const selectedDate = new TZDate(fullDate, ZONE);
         console.log('selectedDate', selectedDate)
         console.log('today', today)
         console.log('selectedDate < today =', selectedDate < today)
@@ -294,8 +324,8 @@ const AdminApp = () => {
                                         <input
                                             type="date"
                                             name="day"
-                                            value={formData.day instanceof Date 
-                                                ? formData.day.toISOString().split('T')[0]
+                                            value={formData.day 
+                                                ? format(new Date(formData.day), 'yyyy-MM-dd')
                                                 : ''}
                                             onChange={handleInputChange}
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
@@ -364,7 +394,7 @@ const AdminApp = () => {
                         </motion.h1>
 
                         <hr className="my-8" />
-
+                        <p className="text-gray-600 text-sm mb-4"> {format(localUserTime, 'yyyy-MM-dd HH:mm:ss')}</p>
                         <motion.h2 
                             initial={{y: -50, opacity: 0 }} 
                             animate={{ y: 0,opacity: 1 }} 
@@ -413,15 +443,11 @@ const AdminApp = () => {
                                         const targetDay = typeof day === 'string' ? day : day.name;
                                         
                                         if (typeof day === 'string') {
-                                            const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
+                                            const apptDay = format(apptDate, 'EEEE', { locale: es }).toUpperCase();
                                             return apptDay === targetDay.toUpperCase();
                                         }
                                         
-                                        return (
-                                            apptDate.getDate() === day.date &&
-                                            apptDate.getMonth() === targetDate.getMonth() &&
-                                            apptDate.getFullYear() === targetDate.getFullYear()
-                                        );
+                                        return isSameDay(apptDate, targetDate);
                                     }).length === 0 ? (
                                         <p className="text-center text-gray-400 text-sm">No hay horarios.</p>
                                     ) : (
