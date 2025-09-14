@@ -4,10 +4,13 @@ import Header from './components/Header';
 import Home from './pages/Home';  
 import AdminApp from './components/Reservation';
 import { useSession } from '@clerk/clerk-react';
+import { useState } from 'react';
 
 function App() {
   const { session } = useSession();
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+  const [step, setStep] = useState(1);
+
   
   return (
     <Router>
