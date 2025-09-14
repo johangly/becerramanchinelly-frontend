@@ -24,7 +24,6 @@ function App() {
               <>
                 <Route path="/" element={<Home />} />
                 <Route path="/pago" element={<div>Página de Pago</div>} />
-                <Route path="/admin" element={<AdminApp />} />
                 <Route path="*" element={<div>404 - Página no encontrada</div>} />
               </>
             )}
