@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from '../api';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { DayInfo, AppointmentInterface } from '@/types';
+import { set } from 'date-fns';
+import { twMerge } from 'tailwind-merge';
 
 type TimeSlot = {
   id: number;
@@ -17,11 +20,13 @@ type TimeSlot = {
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
-const WeeklySchedule = () => {
+const WeeklySchedule = ({ goToNextStep }: { goToNextStep: (appointmentData: AppointmentInterface, step: number) => void }) => {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedDate] = useState(new TZDate(new Date(), ZONE));
   const [loading, setLoading] = useState(true);
-  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [selectedDay, setSelectedDay] = useState<DayInfo | null>(null);
+  const [dayNames, setDayNames] = useState<DayInfo[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
 
   // Obtener la semana actual (lunes a sábado)
   const getWeekDays = () => {
@@ -60,20 +65,91 @@ const WeeklySchedule = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAvailableSlots();
-  }, [selectedDate]);
+ 
 
-  // Agrupar horarios por día
-  const slotsByDay = timeSlots.reduce((acc, slot) => {
-    const day = slot.day.split('T')[0];
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(slot);
+  // Agrupar citas por día
+  const appointmentsByDay = appointments.reduce<Record<string, AppointmentInterface[]>>((acc, appointment) => {
+    if (appointment.isDeleted) return acc;
+    
+    const apptDate = new Date(appointment.day);
+    const dayKey = format(apptDate, 'yyyy-MM-dd');
+    
+    if (!acc[dayKey]) acc[dayKey] = [];
+    acc[dayKey].push(appointment);
     return acc;
-  }, {} as Record<string, TimeSlot[]>);
+  }, {} as Record<string, AppointmentInterface[]>);
 
-  const weekDays = getWeekDays();
+  // const weekDays = getWeekDays();
 
+  // Obtener las fechas de la semana actual
+  const getCurrentWeekDates = () => {
+      let today = new TZDate(new Date(), ZONE);
+      
+      const isSunday = today.getDay() === 0;
+
+      // Si es domingo, se ajusta a lunes
+      if(isSunday){
+          today = addDays(today, 1);
+      }
+      
+      const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 }); // Lunes como primer día de la semana
+      
+      const weekDays = [
+          'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'
+      ];
+      
+      // Crear arreglo con los días y sus fechas
+      return weekDays.map((day, index) => {
+          const dayDate = addDays(startOfCurrentWeek, index);
+          const dayNumber = parseInt(format(dayDate, 'd'), 10); // Obtener el día del mes como número
+          const month = format(dayDate, 'MMM', { locale: es }).toUpperCase();
+          
+          // Establecer la hora al final del día (23:59:59.999)
+          const dateWithTime = set(dayDate, {
+              hours: 23,
+              minutes: 59,
+              seconds: 59,
+              milliseconds: 999
+            });
+          
+          return {
+              name: day,
+              date: dayNumber,
+              month: month,
+              fullDate: dateWithTime
+          };
+      });
+  };
+  useEffect(() => {
+    // fetchAvailableSlots();
+    setDayNames(getCurrentWeekDates());
+    const fetchAppointments = async () => {
+      try {
+          const startDate = dayNames[0]?.fullDate;
+          const endDate = dayNames[dayNames.length - 1]?.fullDate;
+          
+          const response = await apiClient.get('/appointments', {
+              params: {
+                  startDate: startDate?.toISOString(),
+                  endDate: endDate?.toISOString()
+              }
+          });
+          if(response.statusText === 'OK'){
+              setAppointments(response.data.appointments);
+              setLoading(false);
+          }else{
+              toast.error('Error al cargar las citas');
+              setLoading(false);
+          }
+      } catch (err) {
+          toast.error('Error al cargar las citas');
+          console.error('Error fetching appointments:', err);
+          setLoading(false);
+      }
+  };
+
+  fetchAppointments();
+  }, [selectedDate]);
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -81,7 +157,7 @@ const WeeklySchedule = () => {
       </div>
     );
   }
-
+  console.log('appointments',appointments)
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -91,10 +167,10 @@ const WeeklySchedule = () => {
         
         <div className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {weekDays.map((day) => {
-              const dayKey = format(day, 'yyyy-MM-dd');
-              const daySlots = slotsByDay[dayKey] || [];
-              const isSelected = selectedDay && isSameDay(day, selectedDay);
+            {dayNames.map((dayInfo) => {
+              const dayKey = format(dayInfo.fullDate, 'yyyy-MM-dd');
+              const daySlots = appointments.filter((appt) => format(appt.day, 'yyyy-MM-dd') === dayKey) || [];
+              const isSelected = selectedDay && isSameDay(dayInfo.fullDate, selectedDay.fullDate);
               
               return (
                 <div 
@@ -104,17 +180,30 @@ const WeeklySchedule = () => {
                   }`}
                 >
                   <div 
-                    className={`p-3 cursor-pointer ${
+                    className={`p-3 flex justify-between items-center cursor-pointer ${
                       isSelected ? 'bg-blue-50' : 'bg-gray-50 hover:bg-gray-100'
                     }`}
-                    onClick={() => setSelectedDay(day)}
+                    onClick={() => setSelectedDay(dayInfo)}
                   >
-                    <h3 className="font-medium text-gray-900">
-                      {format(day, 'EEEE', { locale: es })}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {format(day, 'd MMMM', { locale: es })}
-                    </p>
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {dayInfo.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {dayInfo.date} {dayInfo.month}
+                      </p>
+                    </div>
+                    <div>
+                      {daySlots.length > 0 ? (
+                        <p className="text-sm text-gray-600">
+                          {daySlots.length} citas disponibles
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          No hay citas disponibles
+                        </p>
+                      )}
+                    </div>
                   </div>
                   
                   <AnimatePresence>
@@ -126,26 +215,37 @@ const WeeklySchedule = () => {
                         className="overflow-hidden"
                       >
                         <div className="p-3 space-y-2">
-                          {daySlots.map((slot) => (
-                            <div 
-                              key={slot.id}
-                              className="flex items-center justify-between p-2 bg-white border rounded-md hover:bg-gray-50"
-                            >
-                              <span className="text-sm font-medium">
-                                {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
-                              </span>
-                              <Button 
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleReservation(slot.id);
-                                }}
-                                className="bg-blue-600 hover:bg-blue-700 text-xs px-3 py-1 h-7"
-                              >
-                                Reservar
-                              </Button>
-                            </div>
-                          ))}
+                          {appointmentsByDay[dayKey]?.length > 0 ? (
+                            <ul className="space-y-2">
+                              {appointmentsByDay[dayKey].map((appt, idx) => (
+                                <li key={idx} className="bg-gray-100 p-3 rounded-md shadow-sm">
+                                  <div className="flex justify-start items-center space-x-3">
+                                    <span className="text-sm font-medium mr-auto">
+                                      {appt.start_time.slice(0, 5)} - {appt.end_time.slice(0, 5)}
+                                    </span>
+                                    <span className={twMerge(
+                                      'text-xs px-2 py-1 rounded-full',
+                                      appt.status === 'disponible' && 'bg-green-100 text-green-800',
+                                      appt.status === 'reservado' && 'bg-blue-100 text-blue-800',
+                                      appt.status === 'completado' && 'bg-purple-100 text-purple-800',
+                                      appt.status === 'cancelado' && 'bg-red-100 text-red-800'
+                                    )}>
+                                      {appt.status === 'disponible' ? 'Disponible' :
+                                       appt.status === 'reservado' ? 'Reservado' :
+                                       appt.status === 'completado' ? 'Completado' : 'Cancelado'}
+                                    </span>
+                                    <button onClick={() => goToNextStep(appt, 2)} className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition-colors">
+                                      Reservar
+                                    </button>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-center text-gray-400 text-sm py-2">
+                              No hay citas programadas
+                            </p>
+                          )}
                         </div>
                       </motion.div>
                     )}
