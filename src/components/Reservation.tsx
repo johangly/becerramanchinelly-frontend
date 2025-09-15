@@ -506,7 +506,7 @@ const AdminApp = () => {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <div className="max-w-[1200px] mx-auto p-6 rounded-lg">
+                    <div className="max-w-[1200px] h-full bg-white mx-auto p-6 rounded-lg shadow-lg">
                         <motion.h1 
                             initial={{y: -50, opacity: 0 }} 
                             animate={{ y: 0,opacity: 1 }} 
@@ -517,9 +517,8 @@ const AdminApp = () => {
                             Panel de Administración de Asesorías
                         </motion.h1>
 
-                        <hr className="my-8" />
-                        <p className="text-gray-600 text-sm mb-4"> {format(localUserTime, 'yyyy-MM-dd HH:mm:ss')}</p>
-                        <motion.h2 
+                        <hr className="my-8 bg-[#bd9554]" />
+                        <motion.h2
                             initial={{y: -50, opacity: 0 }} 
                             animate={{ y: 0,opacity: 1 }} 
                             exit={{ y: -50,opacity: 0 }} 
@@ -540,7 +539,7 @@ const AdminApp = () => {
                                 >
                                     <div className="flex flex-col space-y-2 justify-between items-center mb-4">
                                         <div className="text-center">
-                                            <h3 className="text-lg font-bold text-gray-700">{day.name}</h3>
+                                            <h3 className="text-lg font-bold text-[#bd9554]">{day.name}</h3>
                                             <p className="text-sm text-gray-500">
                                                 {day.date} {day.month}
                                             </p>
@@ -553,7 +552,7 @@ const AdminApp = () => {
                                             whileTap={{ scale: 0.9 }}
                                             transition={{ duration: 0.2, type: 'spring', stiffness: 100 }} 
                                             onClick={() => openAddModal(day)}
-                                            className="p-2 w-full flex justify-center items-center bg-blue-500 text-white hover:bg-blue-600 transition-colors mt-2 rounded-md cursor-pointer"
+                                            className="p-2 w-full flex justify-center items-center bg-[#1e1e1e] text-white hover:bg-[#1e1e1e] transition-colors mt-2 rounded-md cursor-pointer"
                                             aria-label={`Agregar horario para ${day.name}`}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -597,7 +596,7 @@ const AdminApp = () => {
                                                     );
                                                 })
                                                 .map((appt, idx) => (
-                                                    <li key={idx} className="bg-gray-200 text-black p-3 pb-6 rounded-md shadow-md relative">
+                                                    <li key={idx} className="bg-white text-black p-3 pb-6 rounded-md shadow-xl relative">
                                                         <div className="flex justify-between items-center mt-2 mb-4">
                                                             <span className="font-medium text-center w-full">
                                                                 {appt.start_time.split(':').slice(0, 2).join(':')} - {appt.end_time.split(':').slice(0, 2).join(':')}
