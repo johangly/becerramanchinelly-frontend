@@ -21,27 +21,25 @@ function App() {
     navigate('/pago');
   }
   return (
-    <Router>
-      <div className="app">
-        <Header />
-        <main className="mt-[70px] bg-gray-100" style={{
-          // 70px es la altura del header
-          minHeight: 'calc(100vh - 70px)'
-          }}>
-          <Routes>
-            {session?.user && session?.publicUserData?.identifier === adminEmail ? (
-              <Route path="/" element={<AdminApp />} />
-            ) : (
-              <>
-                <Route path="/" element={<Home goToNextStep={nextStep} />} />
-                <Route path="/pago" element={<div>Página de Pago</div>} />
-                <Route path="*" element={<div>404 - Página no encontrada</div>} />
-              </>
-            )}
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <div className="app">
+      <Header />
+      <main className="mt-[70px] bg-gray-100" style={{
+        // 70px es la altura del header
+        minHeight: 'calc(100vh - 70px)'
+        }}>
+        <Routes>
+          {session?.user && session?.publicUserData?.identifier === adminEmail ? (
+            <Route path="/" element={<AdminApp />} />
+          ) : (
+            <>
+              <Route path="/" element={<Home goToNextStep={nextStep} />} />
+              <Route path="/pago" element={<div>Página de Pago</div>} />
+              <Route path="*" element={<div>404 - Página no encontrada</div>} />
+            </>
+          )}
+        </Routes>
+      </main>
+    </div>
   );
 }
 
