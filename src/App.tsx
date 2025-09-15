@@ -5,13 +5,21 @@ import Home from './pages/Home';
 import AdminApp from './components/Reservation';
 import { useSession } from '@clerk/clerk-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { AppointmentInterface } from './types';
 
 function App() {
   const { session } = useSession();
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const [step, setStep] = useState(1);
-
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
+  const navigate = useNavigate();
   
+  function nextStep(appointmentData: AppointmentInterface, step: number) {
+    setSelectedAppointment(appointmentData);
+    setStep(step);
+    navigate('/pago');
+  }
   return (
     <Router>
       <div className="app">
@@ -25,7 +33,7 @@ function App() {
               <Route path="/" element={<AdminApp />} />
             ) : (
               <>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home goToNextStep={nextStep} />} />
                 <Route path="/pago" element={<div>Página de Pago</div>} />
                 <Route path="*" element={<div>404 - Página no encontrada</div>} />
               </>

@@ -1,8 +1,9 @@
 
 import { motion } from 'framer-motion';
 import WeeklySchedule from '@/components/WeeklySchedule';
+import type { AppointmentInterface } from '@/types';
 
-export const Home = () => {
+export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: AppointmentInterface, step: number) => void }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -26,7 +27,7 @@ export const Home = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="bg-white shadow-xl rounded-lg overflow-hidden"
         >
-          <WeeklySchedule />
+          <WeeklySchedule goToNextStep={goToNextStep} />
         </motion.div>
         
         <div className="mt-8 text-center text-sm text-gray-500">
