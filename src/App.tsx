@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import Home from './pages/Home';
@@ -7,6 +7,7 @@ import { useSession } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AppointmentInterface } from './types';
+import Payment from './pages/Payment';
 
 function App() {
   const { session } = useSession();
@@ -46,7 +47,7 @@ function App() {
           ) : (
             <>
               <Route path="/" element={<Home goToNextStep={nextStep} />} />
-              <Route path="/pago" element={<div>Página de Pago</div>} />
+              <Route path="/pago" element={<Payment appointmentData={selectedAppointment} />} />
               <Route path="*" element={<div>404 - Página no encontrada</div>} />
             </>
           )}

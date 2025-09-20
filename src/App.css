@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.paypal-button-container{
+    max-width: 100% !important;
+    width: 100% !important;
+}
 .app{
     background-image: url("./assets/background.jpg");
     background-size: contain;
