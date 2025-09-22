@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
-.paypal-button-container{
-    max-width: 100% !important;
-    width: 100% !important;
-}
 .app{
     background-image: url("./assets/background.jpg");
     background-size: contain;
     background-repeat: no-repeat;
 }
+
+.no-background{
+    background-image: none !important;
+}
+
 .main{
     font-family: "PT Serif", serif;
 }
@@ -37,4 +38,61 @@
     font-family: "PT Serif", serif;
     font-weight: 700;
     font-style: italic;
+}
+
+
+/* layout css */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme{
+  --animate-hidegap: hidegap .3s cubic-bezier(0.77,0,0.18,1) forwards;
+  @keyframes hidegap {
+    0% {
+      gap: 40px;
+    }
+    90% {
+      gap: 40px;
+    }
+    100% {
+      gap: 0;
+    }
+  }
+
+  --animate-slideOutLeft: slideOutLeft .5s cubic-bezier(0.77,0,0.18,1) forwards;
+  @keyframes slideOutLeft {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    90% {
+      transform: translateX(-100%);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-100%);
+      opacity: 0;
+      display: none;
+    }
+  }
+  --animate-slideInLeft: slideInLeft .8s cubic-bezier(0.68,-0.55,0.27,1.55) forwards;
+  @keyframes slideInLeft {
+    0% {
+      transform: translateX(-100%);
+      display: none;
+      opacity: 0;
+    }
+    90% {
+      transform: translateX(0%);
+      opacity: 1;
+      display: block;
+    }
+    100% {
+      transform: translateX(0%);
+      opacity: 1;
+      display: block;
+    }
+  }
 }
