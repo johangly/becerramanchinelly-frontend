@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import type { AppointmentInterface, DayInfo } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { apiClient } from '../api/index';
@@ -65,18 +64,18 @@ const AdminApp = () => {
     const openAddModal = ({ name, date, month, fullDate }: { name: string; date: number; month: string; fullDate: Date }) => {
         // Mapeo de días de la semana (0: Domingo, 1: Lunes, ..., 6: Sábado)
         const weekDays = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
-        
+
         // Extraer el nombre del día si es un objeto
         const dayString = name;
-        
+
         // Obtener el índice del día seleccionado (0-6)
         const selectedDayIndex = weekDays.findIndex(d => d === dayString.toUpperCase());
-        
+
         if (selectedDayIndex === -1) {
             toast.error('Día de la semana no válido');
             return;
         }
-        
+
         const today = new TZDate(new Date(), ZONE);
         const selectedDate = new TZDate(fullDate, ZONE);
 
@@ -103,13 +102,13 @@ const AdminApp = () => {
     // Función para manejar la selección de fecha
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (!selectedDate) return;
-        
+
         const today = new TZDate(new Date(), ZONE);
         today.setHours(0, 0, 0, 0); // Normalizar la fecha de hoy
-        
+
         const selectedDay = new TZDate(selectedDate);
         selectedDay.setHours(0, 0, 0, 0); // Normalizar la fecha seleccionada
-        
+
         if (selectedDay < today) {
             setShowModal(false);
             setOpenDateSelector(false);
@@ -117,37 +116,37 @@ const AdminApp = () => {
             setShowConfirmModal(true);
             return;
         }
-        
+
         setFormData(prev => ({
             ...prev,
             day: selectedDate
         }));
-        
+
         setOpenDateSelector(false);
     };
     // Obtener las fechas de la semana actual
     const getCurrentWeekDates = () => {
         let today = new TZDate(new Date(), ZONE);
-        
+
         const isSunday = today.getDay() === 0;
 
         // Si es domingo, se ajusta a lunes
         if(isSunday){
             today = addDays(today, 1);
         }
-        
+
         const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 }); // Lunes como primer día de la semana
-        
+
         const weekDays = [
             'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'
         ];
-        
+
         // Crear arreglo con los días y sus fechas
         return weekDays.map((day, index) => {
             const dayDate = addDays(startOfCurrentWeek, index);
             const dayNumber = parseInt(format(dayDate, 'd'), 10); // Obtener el día del mes como número
             const month = format(dayDate, 'MMM', { locale: es }).toUpperCase();
-            
+
             // Establecer la hora al final del día (23:59:59.999)
             const dateWithTime = set(dayDate, {
                 hours: 23,
@@ -155,7 +154,7 @@ const AdminApp = () => {
                 seconds: 59,
                 milliseconds: 999
               });
-            
+
             return {
                 name: day,
                 date: dayNumber,
@@ -164,10 +163,8 @@ const AdminApp = () => {
             };
         });
     };
-    
-    const dayNames: DayInfo[] = getCurrentWeekDates();
 
-    console.log('dayNames', dayNames);
+    const dayNames: DayInfo[] = getCurrentWeekDates();
 
     // Cargar citas al montar el componente
     useEffect(() => {
@@ -175,7 +172,7 @@ const AdminApp = () => {
             try {
                 const startDate = dayNames[0]?.fullDate;
                 const endDate = dayNames[dayNames.length - 1]?.fullDate;
-                
+
                 const response = await apiClient.get('/appointments', {
                     params: {
                         startDate: startDate?.toISOString(),
@@ -183,7 +180,6 @@ const AdminApp = () => {
                     }
                 });
                 if(response.statusText === 'OK'){
-                    // console.log('appointments', response.data);
                     setAppointments(response.data.appointments);
                     setLoading(false);
                 }else{
@@ -192,7 +188,6 @@ const AdminApp = () => {
                 }
             } catch (err) {
                 toast.error('Error al cargar las citas');
-                console.error('Error fetching appointments:', err);
                 setLoading(false);
             }
         };
@@ -219,7 +214,7 @@ const AdminApp = () => {
         const currentTime = now.toTimeString().slice(0, 8); // Formato HH:MM:SS
         const currentDate = now.toISOString().split('T')[0];
         const selectedDate = formData.day ? new TZDate(formData.day, ZONE).toISOString().split('T')[0] : null;
-        
+
         // Validar hora de inicio vs hora actual (solo si es el día actual)
         if (selectedDate === currentDate && formData.start_time) {
             const selectedTimeSec = timeToSeconds(formData.start_time);
@@ -229,18 +224,18 @@ const AdminApp = () => {
                 return;
             }
         }
-        
+
         // Validar que start_time no sea mayor que end_time
         if (formData.start_time && formData.end_time) {
             const startTimeSec = timeToSeconds(formData.start_time);
             const endTimeSec = timeToSeconds(formData.end_time);
-            
+
             if (startTimeSec > endTimeSec) {
                 toast.error('La hora de inicio no puede ser mayor que la hora de fin');
                 return;
             }
         }
-        
+
         // Validar campos requeridos
         if (!formData.start_time || !formData.end_time) {
             toast.error('Por favor completa todos los campos de tiempo');
@@ -266,7 +261,7 @@ const AdminApp = () => {
                 const response = await apiClient.put(`/appointments/${editingId}`, appointmentData);
                 if (response.data.status === 'success') {
                     toast.success(response.data.message || 'Horario actualizado exitosamente');
-                    setAppointments(appointments.map(app => 
+                    setAppointments(appointments.map(app =>
                         app.id === editingId ? response.data.data : app
                     ));
                     closeCustomModal();
@@ -280,7 +275,7 @@ const AdminApp = () => {
                     closeCustomModal();
                 }
             }
-            
+
             // Resetear el formulario
             setFormData({
                 id: 0,
@@ -298,15 +293,14 @@ const AdminApp = () => {
 
         } catch (err) {
             toast.error('Error al guardar la cita');
-            console.error('Error saving appointment:', err);
         }
     };
 
     const handleEdit = (appointment: AppointmentInterface) => {
         setFormData({
             id: appointment.id,
-            day: typeof appointment.day === 'string' 
-                ? new TZDate(new Date(appointment.day), ZONE) 
+            day: typeof appointment.day === 'string'
+                ? new TZDate(new Date(appointment.day), ZONE)
                 : appointment.day,
             start_time: appointment.start_time,
             end_time: appointment.end_time,
@@ -326,32 +320,31 @@ const AdminApp = () => {
 
     const confirmDelete = async () => {
         if (!appointmentToDelete) return;
-        
+
         try {
             // Realizar la petición de eliminación lógica
             await apiClient.delete(`/appointments/${appointmentToDelete}`);
-            
+
             // Actualizar el estado local marcando la cita como eliminada
-            const updatedAppointments = appointments.map(appt => 
-                appt.id === appointmentToDelete 
-                    ? { 
-                        ...appt, 
-                        isDeleted: true, 
-                      } 
+            const updatedAppointments = appointments.map(appt =>
+                appt.id === appointmentToDelete
+                    ? {
+                        ...appt,
+                        isDeleted: true,
+                      }
                     : appt
             );
-            
+
             setAppointments(updatedAppointments);
             toast.success('Horario eliminado exitosamente');
         } catch (err) {
             toast.error('Error al eliminar el horario');
-            console.error('Error deleting appointment:', err);
         } finally {
             setShowDeleteConfirmModal(false);
             setAppointmentToDelete(null);
         }
     };
-    
+
     const cancelDelete = () => {
         setShowDeleteConfirmModal(false);
         setAppointmentToDelete(null);
@@ -374,17 +367,17 @@ const AdminApp = () => {
 
     const confirmCreateForNextWeek = () => {
         if (!pendingDate) return;
-        
+
         const nextWeek = new Date(pendingDate);
         nextWeek.setDate(nextWeek.getDate() + 7);
         nextWeek.setHours(12, 0, 0, 0)
-        
+
         setFormData(prev => ({
             ...prev,
             day: new TZDate(nextWeek, ZONE),
             reservation_date: null
         }));
-        
+
         setShowConfirmModal(false);
         setPendingDate(null);
         setShowModal(true);
@@ -507,11 +500,11 @@ const AdminApp = () => {
                         )}
                     </AnimatePresence>
                     <div className="max-w-[1200px] h-full bg-white mx-auto p-6 rounded-lg shadow-lg">
-                        <motion.h1 
-                            initial={{y: -50, opacity: 0 }} 
-                            animate={{ y: 0,opacity: 1 }} 
-                            exit={{ y: -50,opacity: 0 }} 
-                            transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }} 
+                        <motion.h1
+                            initial={{y: -50, opacity: 0 }}
+                            animate={{ y: 0,opacity: 1 }}
+                            exit={{ y: -50,opacity: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }}
                             className="text-3xl font-bold mb-6 text-center text-gray-800"
                         >
                             Panel de Administración de Asesorías
@@ -519,22 +512,22 @@ const AdminApp = () => {
 
                         <hr className="my-8 bg-[#bd9554]" />
                         <motion.h2
-                            initial={{y: -50, opacity: 0 }} 
-                            animate={{ y: 0,opacity: 1 }} 
-                            exit={{ y: -50,opacity: 0 }} 
-                            transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }} 
+                            initial={{y: -50, opacity: 0 }}
+                            animate={{ y: 0,opacity: 1 }}
+                            exit={{ y: -50,opacity: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }}
                             className="text-2xl font-bold mb-4 text-center text-gray-800"
                         >
                             Horarios Existentes
                         </motion.h2>
                         <div className="flex flex-col md:flex-row gap-4 pb-4">
                             {dayNames.map((day, index) => (
-                                <motion.div 
-                                    initial={{y: -100, opacity: 0 }} 
-                                    animate={{ y: 0,opacity: 1 }} 
-                                    exit={{ y: -100,opacity: 0 }} 
-                                    transition={{ duration: 0.3, delay: index * 0.1, type: 'spring', stiffness: 100 }} 
-                                    key={`${day.name}-${index}`} 
+                                <motion.div
+                                    initial={{y: -100, opacity: 0 }}
+                                    animate={{ y: 0,opacity: 1 }}
+                                    exit={{ y: -100,opacity: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.1, type: 'spring', stiffness: 100 }}
+                                    key={`${day.name}-${index}`}
                                     className="flex-1 min-w-[100px] p-4"
                                 >
                                     <div className="flex flex-col space-y-2 justify-between items-center mb-4">
@@ -545,12 +538,12 @@ const AdminApp = () => {
                                             </p>
                                         </div>
                                         <motion.button
-                                            initial={{scale:1, opacity: 0 }} 
-                                            animate={{ scale: 1,opacity: 1 }} 
-                                            exit={{ scale: 1,opacity: 0 }} 
+                                            initial={{scale:1, opacity: 0 }}
+                                            animate={{ scale: 1,opacity: 1 }}
+                                            exit={{ scale: 1,opacity: 0 }}
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
-                                            transition={{ duration: 0.2, type: 'spring', stiffness: 100 }} 
+                                            transition={{ duration: 0.2, type: 'spring', stiffness: 100 }}
                                             onClick={() => openAddModal(day)}
                                             className="p-2 w-full flex justify-center items-center bg-[#1e1e1e] text-white hover:bg-[#1e1e1e] transition-colors mt-2 rounded-md cursor-pointer"
                                             aria-label={`Agregar horario para ${day.name}`}
@@ -564,12 +557,12 @@ const AdminApp = () => {
                                         const apptDate = new Date(appt.day);
                                         const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
                                         const targetDay = typeof day === 'string' ? day : day.name;
-                                        
+
                                         if (typeof day === 'string') {
                                             const apptDay = format(apptDate, 'EEEE', { locale: es }).toUpperCase();
                                             return apptDay === targetDay.toUpperCase();
                                         }
-                                        
+
                                         return isSameDay(apptDate, targetDate);
                                     }).length === 0 ? (
                                         <p className="text-center text-gray-400 text-sm">No hay horarios.</p>
@@ -579,16 +572,16 @@ const AdminApp = () => {
                                                 .filter(appt => {
                                                     // Omitir citas eliminadas lógicamente
                                                     if (appt.isDeleted) return false;
-                                                    
+
                                                     const apptDate = new Date(appt.day);
                                                     const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
                                                     const targetDay = typeof day === 'string' ? day : day.name;
-                                                    
+
                                                     if (typeof day === 'string') {
                                                         const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
                                                         return apptDay === targetDay.toUpperCase();
                                                     }
-                                                    
+
                                                     return (
                                                         apptDate.getDate() === day.date &&
                                                         apptDate.getMonth() === targetDate.getMonth() &&
@@ -640,14 +633,14 @@ const AdminApp = () => {
             {/* Modal de confirmación de eliminación */}
             <AnimatePresence>
             {showDeleteConfirmModal && (
-                <motion.div 
+                <motion.div
                     className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={cancelDelete}
                 >
-                    <motion.div 
+                    <motion.div
                         className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -680,14 +673,14 @@ const AdminApp = () => {
             {/* Modal de confirmación para fechas pasadas */}
             <AnimatePresence>
                 {showConfirmModal && (
-                    <motion.div 
+                    <motion.div
                         className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setShowConfirmModal(false)}
                     >
-                        <motion.div 
+                        <motion.div
                             className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -696,7 +689,7 @@ const AdminApp = () => {
                         >
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Fecha pasada</h3>
                             <p className="text-gray-600 mb-6">
-                                No se puede crear un espacio de cita para una fecha pasada. 
+                                No se puede crear un espacio de cita para una fecha pasada.
                                 ¿Deseas crear el espacio para el mismo día pero de la próxima semana?
                             </p>
                             <div className="flex justify-end space-x-3">
