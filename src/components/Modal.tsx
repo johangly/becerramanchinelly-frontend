@@ -16,25 +16,25 @@ export default function Modal({
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 flex flex-col items-center justify-center z-50 mt-12 overflow-y-scroll hidden-scrollbar"
+                className="fixed inset-0 flex flex-col items-center justify-center z-50 overflow-y-scroll hidden-scrollbar"
                 onClick={() => setShowModal(false)}
             >
                 <motion.div
-                    className="absolute inset-0 bg-black"
+                    className="absolute backdrop-blur-xs inset-0 bg-gray-600/50"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.7 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setShowModal(false)}
                 />
                 <motion.div
-                    className="bg-white rounded-lg opacity-100 shadow-lg p-6 w-auto relative flex flex-col items-center"
+                    className="bg-white dark:bg-gray-800 rounded-lg opacity-100 shadow-sm p-6 w-full max-w-2xl relative flex flex-col items-center border dark:border-gray-700 border-gray-200"
                     initial={{scale: 0.95, opacity: 0}}
                     animate={{scale: 1, opacity: 1}}
                     exit={{scale: 0.95, opacity: 0}}
                     transition={{duration: 0.2}}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="w-full border-b border-gray-200 pb-2 relative flex opacity-100">
+                    <div className="w-full border-b border-gray-200 pb-1 relative flex opacity-100">
                         <h2 className="text-2xl font-semibold mb-4 text-center">
                             {title}
                         </h2>
@@ -46,7 +46,7 @@ export default function Modal({
                             <XCircle size={20}/>
                         </button>
                     </div>
-                    <div className="p-2 relative flex flex-col items-center">
+                    <div className="p-2 relative flex flex-col w-full items-center">
                         {children}
                     </div>
             </motion.div>

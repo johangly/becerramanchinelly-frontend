@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { ChevronLeft, Phone, CreditCard} from 'lucide-react';
+import { ChevronLeft, Phone, CreditCard } from 'lucide-react';
 import type { SidebarProps } from '../types/index';
 import { twMerge } from 'tailwind-merge';
 import PayPalIcon from '@/components/icons/paypal';
@@ -94,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
                   <button
                     className={
                       `flex w-full items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${openGestionOfPayment
-                        ? 'bg-blue-600 text-white shadow-lg'
+                        ? 'bg-blue-800 text-white shadow-lg'
                         : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
                       }`
                     }
@@ -148,75 +148,77 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
                       )}
                     </>
                   </button>
-                  <div className="ml-2 mt-2 flex flex-col space-y-2">
-                    {paymentMethods.map((item, index) => (
-                      <motion.li
-                        key={item.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <NavLink
-                          to={item.path}
-                          className={({ isActive }) =>
-                            `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${isActive
-                              ? 'bg-blue-600 text-white shadow-lg'
-                              : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
-                            }`
-                          }
+                  <div className={twMerge("flex flex-col max-h-[0px] overflow-hidden transition-all duration-200 ml-2", isCollapsed && "ml-0", openGestionOfPayment && "max-h-[500px] mt-2 ")}>
+                    <div className={twMerge("flex flex-col h-auto overflow-hidden space-y-2", isCollapsed && "ml-0")}>
+                      {paymentMethods.map((item, index) => (
+                        <motion.li
+                          key={item.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
                         >
-                          {({ isActive }) => (
-                            <>
-                              <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
-                                <item.icon className="w-5 h-5" />
-                              </div>
+                          <NavLink
+                            to={item.path}
+                            className={({ isActive }) =>
+                              `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${isActive
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                              }`
+                            }
+                          >
+                            {({ isActive }) => (
+                              <>
+                                <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
+                                  <item.icon className="w-5 h-5" />
+                                </div>
 
-                              <AnimatePresence mode="wait">
-                                {!isCollapsed && (
+                                <AnimatePresence mode="wait">
+                                  {!isCollapsed && (
+                                    <motion.div
+                                      initial={{ opacity: 0, x: -10 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      exit={{ opacity: 0, x: -10 }}
+                                      transition={{ duration: 0.2 }}
+                                      className="flex items-center justify-between flex-1"
+                                    >
+                                      <span className="font-medium">{item.label}</span>
+                                      {item.badge && item.badge !== 0 && item.badge > 0 ? (
+                                        <motion.span
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          className={`px-2 py-1 text-xs rounded-full ${isActive
+                                            ? 'bg-white text-blue-600'
+                                            : 'bg-red-500 text-white'
+                                            }`}
+                                        >
+                                          {item.badge}
+                                        </motion.span>
+                                      ) : null}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Tooltip for collapsed state */}
+                                {isCollapsed && (
                                   <motion.div
                                     initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="flex items-center justify-between flex-1"
+                                    whileHover={{ opacity: 1, x: 0 }}
+                                    className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
                                   >
-                                    <span className="font-medium">{item.label}</span>
-                                    {item.badge && item.badge !== 0 && item.badge > 0 ? (
-                                      <motion.span
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        className={`px-2 py-1 text-xs rounded-full ${isActive
-                                          ? 'bg-white text-blue-600'
-                                          : 'bg-red-500 text-white'
-                                          }`}
-                                      >
+                                    {item.label}
+                                    {item.badge && item.badge !== 0 && item.badge > 0 && (
+                                      <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
                                         {item.badge}
-                                      </motion.span>
-                                    ) : null}
+                                      </span>
+                                    )}
                                   </motion.div>
                                 )}
-                              </AnimatePresence>
-
-                              {/* Tooltip for collapsed state */}
-                              {isCollapsed && (
-                                <motion.div
-                                  initial={{ opacity: 0, x: -10 }}
-                                  whileHover={{ opacity: 1, x: 0 }}
-                                  className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
-                                >
-                                  {item.label}
-                                  {item.badge && item.badge !== 0 && item.badge > 0 && (
-                                    <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
-                                      {item.badge}
-                                    </span>
-                                  )}
-                                </motion.div>
-                              )}
-                            </>
-                          )}
-                        </NavLink>
-                      </motion.li>
-                    ))}
+                              </>
+                            )}
+                          </NavLink>
+                        </motion.li>
+                      ))}
+                    </div>
                   </div>
                 </>
               ) : (
