@@ -6,6 +6,7 @@ import {useSession} from '@clerk/clerk-react';
 import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
+import {strict} from "node:assert";
 
 const dataEmpty = {
     amount: "",
@@ -159,7 +160,7 @@ export default function useManualPayment() {
                 });
         } catch (error) {
             if (isAxiosError(error))
-                toast.error("Error submitting form. Please try again.");
+                toast.error(error.message);
         }
     };
     useEffect(() => {

@@ -30,7 +30,7 @@
     box-shadow: var(--shadow);
     background-color: rgba(255, 255, 255);
     backdrop-filter: blur(10px);
-    position: fixed;
+    position: sticky;
     color:#181818;
 }
 
