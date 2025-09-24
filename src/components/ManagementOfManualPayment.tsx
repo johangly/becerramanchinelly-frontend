@@ -44,11 +44,11 @@ export default function ManagementOfManualPayment() {
     } = useManualPayment();
 
     return (
-        <div className="container mx-auto px-4 py-6 mt-24 h-[100%] min-h-screen">
+        <div className="container mx-auto px-4 py-6 h-[100%] min-h-screen">
             <motion.div
                 initial={{y: -100, opacity: 0}}
                 animate={{y: 0, opacity: 1}}
-                className="bg-white h-[100%] min-h-screen rounded-lg flex flex-col items-center overflow-hidden"
+                className="h-[100%] min-h-screen rounded-lg flex flex-col items-center overflow-hidden"
             >
                 {showModal && (
                     <ModalOfManualPaymentToSeeDetails setShowModal={setShowModal} infoOfManualPaymentById={infoOfManualPaymentById} setShowImageModal={setShowImageModal} setNewStatusOfManualPayment={setNewStatusOfManualPayment} buttonsActionsOfVerifyPayment={buttonsActionsOfVerifyPayment}
@@ -80,7 +80,7 @@ export default function ManagementOfManualPayment() {
                         Gestión de Pagos Manuales
                     </h2>
                     <div>
-                        <p className="text-gray-600 mb-2">
+                        <p className="mb-2">
                             Filtros
                         </p>
                         <div className="flex gap-4">
@@ -99,7 +99,7 @@ export default function ManagementOfManualPayment() {
                 </div>
                 {dataFiltered && dataFiltered.data.length > 0 ? (
                     <div
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-items-center content-center w-[90%]">
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-items-center content-center w-[100%]">
                         {dataFiltered.data.map((payment) => (
                             <motion.div
                                 key={payment.id}
@@ -107,7 +107,7 @@ export default function ManagementOfManualPayment() {
                                 animate={{opacity: 1, scale: 1}}
                                 exit={{opacity: 0, scale: 0.95}}
                                 transition={{duration: 0.3}}
-                                className="bg-white shadow-md rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300 w-[90%]"
+                                className="bg-white shadow-md rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300 w-[100%]"
                             >
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-xl font-semibold text-[#1e1e1e]">
