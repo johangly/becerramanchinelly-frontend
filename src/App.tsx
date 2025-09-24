@@ -52,7 +52,7 @@ function App() {
 							}
 						/>
 						<Route
-							path="/management-of-manual-payment"
+							path="/management-of-external-payment"
 							element={
 								<Layout>
 									<ManagementOfManualPayment />
