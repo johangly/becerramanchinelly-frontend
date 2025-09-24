@@ -13,9 +13,11 @@
 .header {
     top: 0;
     left: 0;
-    z-index: 99;
-    height: 60px;
+    height: 90px; /* Ajusta según el diseño */
+    z-index: 1000;
     width: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     /* z-index: 1000; */
     transition: var(--transition);

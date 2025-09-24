@@ -154,7 +154,7 @@ const AdminApp = () => {
                 minutes: 59,
                 seconds: 59,
                 milliseconds: 999
-            });
+              });
 
             return {
                 name: day,
@@ -166,8 +166,6 @@ const AdminApp = () => {
     };
 
     const dayNames: DayInfo[] = getCurrentWeekDates();
-
-    console.log('dayNames', dayNames);
 
     // Cargar citas al montar el componente
     useEffect(() => {
@@ -182,8 +180,7 @@ const AdminApp = () => {
                         endDate: endDate?.toISOString()
                     }
                 });
-                if (response.statusText === 'OK') {
-                    // console.log('appointments', response.data);
+                if(response.statusText === 'OK'){
                     setAppointments(response.data.appointments);
                     setLoading(false);
                 } else {
@@ -192,7 +189,7 @@ const AdminApp = () => {
                 }
             } catch (err) {
                 toast.error('Error al cargar las citas');
-                console.error('Error fetching appointments:', err);
+                console.log('error:', err)
                 setLoading(false);
             }
         };
@@ -299,7 +296,7 @@ const AdminApp = () => {
 
         } catch (err) {
             toast.error('Error al guardar la cita');
-            console.error('Error saving appointment:', err);
+            console.log('error:', err)
         }
     };
 
@@ -339,7 +336,7 @@ const AdminApp = () => {
                     ? {
                         ...appt,
                         isDeleted: true,
-                    }
+                      }
                     : appt
             );
 
@@ -347,7 +344,7 @@ const AdminApp = () => {
             toast.success('Horario eliminado exitosamente');
         } catch (err) {
             toast.error('Error al eliminar el horario');
-            console.error('Error deleting appointment:', err);
+            console.log('error:', err)
         } finally {
             setShowDeleteConfirmModal(false);
             setAppointmentToDelete(null);
@@ -532,36 +529,36 @@ const AdminApp = () => {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <div className="max-w-7xl w-full mx-auto">
+                    <div className="max-w-[1200px] h-full bg-white mx-auto p-6 rounded-lg shadow-lg">
                         <motion.h1
-                            initial={{ y: -50, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -50, opacity: 0 }}
+                            initial={{y: -50, opacity: 0 }}
+                            animate={{ y: 0,opacity: 1 }}
+                            exit={{ y: -50,opacity: 0 }}
                             transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }}
-                            className="text-3xl font-bold mb-3 text-center text-gray-800 dark:text-gray-100"
+                            className="text-3xl font-bold mb-6 text-center text-gray-800"
                         >
                             Panel de Administración de Asesorías
                         </motion.h1>
 
                         <hr className="mb-2 mt-4 bg-[#bd9554] max-w-[400px] mx-auto" />
                         <motion.h2
-                            initial={{ y: -50, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -50, opacity: 0 }}
+                            initial={{y: -50, opacity: 0 }}
+                            animate={{ y: 0,opacity: 1 }}
+                            exit={{ y: -50,opacity: 0 }}
                             transition={{ duration: 0.3, delay: 0.1, type: 'spring', stiffness: 100 }}
-                            className="text-2xl font-bold mb-8 text-center text-gray-800 dark:text-gray-100"
+                            className="text-2xl font-bold mb-4 text-center text-gray-800"
                         >
                             Horarios Existentes
                         </motion.h2>
                         <div className="flex flex-col md:flex-row gap-4 pb-4">
                             {dayNames.map((day, index) => (
                                 <motion.div
-                                    initial={{ y: -100, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -100, opacity: 0 }}
+                                    initial={{y: -100, opacity: 0 }}
+                                    animate={{ y: 0,opacity: 1 }}
+                                    exit={{ y: -100,opacity: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.1, type: 'spring', stiffness: 100 }}
                                     key={`${day.name}-${index}`}
-                                    className="flex-1 min-w-[100px] p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm"
+                                    className="flex-1 min-w-[100px] p-4"
                                 >
                                     <div className="flex flex-col space-y-2 justify-between items-center mb-4">
                                         <div className="text-center">
@@ -571,12 +568,12 @@ const AdminApp = () => {
                                             </p>
                                         </div>
                                         <motion.button
-                                            initial={{ scale: 1, opacity: 0 }}
-                                            animate={{ scale: 1, opacity: 1 }}
-                                            exit={{ scale: 1, opacity: 0 }}
+                                            initial={{scale:1, opacity: 0 }}
+                                            animate={{ scale: 1,opacity: 1 }}
+                                            exit={{ scale: 1,opacity: 0 }}
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
-                                            transition={{ duration: 0.1 }}
+                                            transition={{ duration: 0.2, type: 'spring', stiffness: 100 }}
                                             onClick={() => openAddModal(day)}
                                             className="p-2 w-full flex justify-center items-center bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-500 border border-gray-200 dark:border-gray-700 text-white hover:bg-gray-700 transition-colors mt-2 rounded-md cursor-pointer"
                                             aria-label={`Agregar horario para ${day.name}`}
@@ -668,7 +665,47 @@ const AdminApp = () => {
 
             {/* Modal de confirmación de eliminación */}
             <AnimatePresence>
-                {showDeleteConfirmModal && (
+            {showDeleteConfirmModal && (
+                <motion.div
+                    className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={cancelDelete}
+                >
+                    <motion.div
+                        className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Confirmar eliminación</h3>
+                        <p className="text-gray-600 mb-6">
+                            ¿Estás seguro de que deseas eliminar este horario? Esta acción no se puede deshacer.
+                        </p>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+            </AnimatePresence>
+
+            {/* Modal de confirmación para fechas pasadas */}
+            <AnimatePresence>
+                {showConfirmModal && (
                     <motion.div
                         className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
                         initial={{ opacity: 0 }}
@@ -685,7 +722,8 @@ const AdminApp = () => {
                         >
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Confirmar eliminación</h3>
                             <p className="text-gray-600 mb-6">
-                                ¿Estás seguro de que deseas eliminar este horario? Esta acción no se puede deshacer.
+                                No se puede crear un espacio de cita para una fecha pasada.
+                                ¿Deseas crear el espacio para el mismo día pero de la próxima semana?
                             </p>
                             <div className="flex justify-end space-x-3">
                                 <button
