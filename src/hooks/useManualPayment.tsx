@@ -1,5 +1,4 @@
 import type {
-    ManualPayment,
     ManualPaymentByIdInterface,
     ManualPaymentResponseInterface
 } from '@/interfaces/manualPaymentInterfaces';
@@ -7,7 +6,6 @@ import {useSession} from '@clerk/clerk-react';
 import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
-import {Clock} from "lucide-react";
 
 const dataEmpty = {
     amount: "",
@@ -38,7 +36,7 @@ export default function useManualPayment() {
     const [filter, setFilter] = useState("")
     const [showImageModal, setShowImageModal] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
-    const [newStatusOfManualPayment, setNewStatusOfManualPayment] = useState<string | null>(infoOfManualPaymentById?.paymentAppointment.status);
+    const [newStatusOfManualPayment, setNewStatusOfManualPayment] = useState<string | null | undefined>(infoOfManualPaymentById?.paymentAppointment.status);
     useEffect(() => {
         if (filter === "") {
             setDataFiltered(allManualPayments)
