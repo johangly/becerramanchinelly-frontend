@@ -28,7 +28,7 @@ function App() {
 	}
 
 	return (
-		<div className={`${session?.user && session?.publicUserData?.identifier === adminEmail ? 'no-background' : 'app'}`}>
+		<div className={`${isHomePage ? "app" : ""}`}>
 			<Routes>
 				{session?.user && session?.publicUserData?.identifier === adminEmail ? (
 					<>
