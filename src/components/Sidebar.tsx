@@ -1,12 +1,37 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { ChevronLeft, Phone } from 'lucide-react';
+import { ChevronLeft, Phone, CreditCard} from 'lucide-react';
 import type { SidebarProps } from '../types/index';
 import { twMerge } from 'tailwind-merge';
+import PayPalIcon from '@/components/icons/paypal';
+import StripeIcon from '@/components/icons/stripe';
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, user }) => {
-
+  const [openGestionOfPayment, setOpenGestionOfPayment] = React.useState(false);
+  const paymentMethods = [
+    {
+      id: "external-payment",
+      label: "Pago Externo",
+      path: "/management-of-external-payment",
+      icon: CreditCard,
+      badge: 0
+    },
+    {
+      id: "paypal",
+      label: "PayPal",
+      path: "/management-of-paypal",
+      icon: PayPalIcon,
+      badge: 0
+    },
+    {
+      id: "stripe",
+      label: "Stripe",
+      path: "/management-of-stripe",
+      icon: StripeIcon,
+      badge: 0
+    }
+  ]
   return (
     <motion.aside
       initial={false}
@@ -18,15 +43,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
       <div className={twMerge("border-b dark:border-gray-700 border-gray-200 h-[64.8px] flex items-center justify-center", isCollapsed ? "px-2 py-3" : "py-2")}>
         <div className="flex items-center justify-center gap-x-8">
           <AnimatePresence mode="wait">
-                <motion.div
-                  className={twMerge("flex flex-col justifty-center transition-all items-center w-full animate-slideInLeft text-center w-50",isCollapsed && 'animate-slideOutLeft')}
-                >
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Becerra Manchinelly</h2>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 w-40 text-center mx-auto">Firma Legal
-                  Mexicana</p>
-                </motion.div>
+            <motion.div
+              className={twMerge("flex flex-col justifty-center transition-all items-center w-full animate-slideInLeft text-center w-50", isCollapsed && 'animate-slideOutLeft')}
+            >
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Becerra Manchinelly</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400 w-40 text-center mx-auto">Firma Legal
+                Mexicana</p>
+            </motion.div>
           </AnimatePresence>
-          
+
           {isCollapsed && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -64,67 +89,197 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${
-                    isActive
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
-                      <item.icon className="w-5 h-5" />
-                    </div>
-                    
-                    <AnimatePresence mode="wait">
-                      {!isCollapsed && (
+              {item.id === "management-of-payment" ? (
+                <>
+                  <button
+                    className={
+                      `flex w-full items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${openGestionOfPayment
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                      }`
+                    }
+                    onClick={() => setOpenGestionOfPayment(!openGestionOfPayment)}
+                  >
+                    <>
+                      <div className={`flex-shrink-0 ${openGestionOfPayment ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
+                        <item.icon className="w-5 h-5" />
+                      </div>
+
+                      <AnimatePresence mode="wait">
+                        {!isCollapsed && (
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center justify-between flex-1"
+                          >
+                            <span className="font-medium">{item.label}</span>
+                            {item.badge && item.badge !== 0 && item.badge > 0 ? (
+                              <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className={`px-2 py-1 text-xs rounded-full ${openGestionOfPayment
+                                  ? 'bg-white text-blue-600'
+                                  : 'bg-red-500 text-white'
+                                  }`}
+                              >
+                                {item.badge}
+                              </motion.span>
+                            ) : null}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Tooltip for collapsed state */}
+                      {isCollapsed && (
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="flex items-center justify-between flex-1"
+                          whileHover={{ opacity: 1, x: 0 }}
+                          className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
                         >
-                          <span className="font-medium">{item.label}</span>
-                          {item.badge && item.badge !== 0 && item.badge > 0 ? (
-                            <motion.span
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className={`px-2 py-1 text-xs rounded-full ${
-                                isActive 
-                                  ? 'bg-white text-blue-600' 
-                                  : 'bg-red-500 text-white'
-                              }`}
-                            >
+                          {item.label}
+                          {item.badge && item.badge !== 0 && item.badge > 0 && (
+                            <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
                               {item.badge}
-                            </motion.span>
-                          ) : null}
+                            </span>
+                          )}
                         </motion.div>
                       )}
-                    </AnimatePresence>
-
-                    {/* Tooltip for collapsed state */}
-                    {isCollapsed && (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        whileHover={{ opacity: 1, x: 0 }}
-                        className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
+                    </>
+                  </button>
+                  <div className="ml-2 mt-2 flex flex-col space-y-2">
+                    {paymentMethods.map((item, index) => (
+                      <motion.li
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
                       >
-                        {item.label}
-                        {item.badge && item.badge !== 0 && item.badge > 0 && (
-                          <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
-                            {item.badge}
-                          </span>
+                        <NavLink
+                          to={item.path}
+                          className={({ isActive }) =>
+                            `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${isActive
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
+                                <item.icon className="w-5 h-5" />
+                              </div>
+
+                              <AnimatePresence mode="wait">
+                                {!isCollapsed && (
+                                  <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="flex items-center justify-between flex-1"
+                                  >
+                                    <span className="font-medium">{item.label}</span>
+                                    {item.badge && item.badge !== 0 && item.badge > 0 ? (
+                                      <motion.span
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className={`px-2 py-1 text-xs rounded-full ${isActive
+                                          ? 'bg-white text-blue-600'
+                                          : 'bg-red-500 text-white'
+                                          }`}
+                                      >
+                                        {item.badge}
+                                      </motion.span>
+                                    ) : null}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+
+                              {/* Tooltip for collapsed state */}
+                              {isCollapsed && (
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  whileHover={{ opacity: 1, x: 0 }}
+                                  className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
+                                >
+                                  {item.label}
+                                  {item.badge && item.badge !== 0 && item.badge > 0 && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </motion.div>
+                              )}
+                            </>
+                          )}
+                        </NavLink>
+                      </motion.li>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${isActive
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'text-gray-700 dark:text-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-100 group-hover:text-gray-700'}`}>
+                        <item.icon className="w-5 h-5" />
+                      </div>
+
+                      <AnimatePresence mode="wait">
+                        {!isCollapsed && (
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center justify-between flex-1"
+                          >
+                            <span className="font-medium">{item.label}</span>
+                            {item.badge && item.badge !== 0 && item.badge > 0 ? (
+                              <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className={`px-2 py-1 text-xs rounded-full ${isActive
+                                  ? 'bg-white text-blue-600'
+                                  : 'bg-red-500 text-white'
+                                  }`}
+                              >
+                                {item.badge}
+                              </motion.span>
+                            ) : null}
+                          </motion.div>
                         )}
-                      </motion.div>
-                    )}
-                  </>
-                )}
-              </NavLink>
+                      </AnimatePresence>
+
+                      {/* Tooltip for collapsed state */}
+                      {isCollapsed && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -10 }}
+                          whileHover={{ opacity: 1, x: 0 }}
+                          className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none"
+                        >
+                          {item.label}
+                          {item.badge && item.badge !== 0 && item.badge > 0 && (
+                            <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-xs rounded-full">
+                              {item.badge}
+                            </span>
+                          )}
+                        </motion.div>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              )}
             </motion.li>
           ))}
         </ul>
@@ -155,7 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
               className="flex justify-center"
             >
               <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">{user.nombre[0] + user.nombre[1]}</span>
+                <span className="text-white font-semibold text-sm">{user.nombre[0] + user.nombre[1]}</span>
               </div>
             </motion.div>
           )}

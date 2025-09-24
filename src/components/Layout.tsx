@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Moon, Sun, CalendarDays, SquareChartGantt, Settings, PieChart } from 'lucide-react';
+import { Moon, Sun, CalendarDays, HandCoins, Settings, PieChart } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext.tsx';
 import { Toaster } from 'react-hot-toast';
 import type { MenuItem } from '../types';
@@ -32,7 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         // {
         //   id: 'overview',
         //   label: 'Vista General',
-        //   icon: BarChart3,
+        //   icon: HandCoins,
         //   path: '/', // Ruta base
         // },
         // {
@@ -54,6 +54,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         //   icon: GalleryVerticalEnd,
         //   path: '/campaigns',
         // },
+        {
+          id: 'management-of-payment',
+          label: 'Gestión de pagos',
+          icon: HandCoins,
+          path: '/management-of-payment',
+          badge: 0// Ejemplo de badge para notificaciones
+        },
         {
           id: 'configuracion',
           label: 'Configuración',

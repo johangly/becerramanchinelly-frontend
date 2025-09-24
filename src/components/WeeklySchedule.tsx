@@ -325,7 +325,7 @@ const WeeklySchedule = ({
                                                                             <div
                                                                                 className="flex justify-start items-center space-x-3">
 																				<span
-                                                                                    className="text-sm font-medium mr-auto">
+                                                                                    className="text-sm font-medium mr-auto text-[#1e1e1e]">
 																					{appt.start_time.slice(
                                                                                         0,
                                                                                         5

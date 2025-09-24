@@ -28,7 +28,7 @@ function App() {
 	}
 
 	return (
-		<div className={`${session?.user && session?.publicUserData?.identifier === adminEmail ? 'no-background' : 'app'}`}>
+		<div className={`${isHomePage ? "app" : ""}`}>
 			<Routes>
 				{session?.user && session?.publicUserData?.identifier === adminEmail ? (
 					<>
@@ -52,7 +52,7 @@ function App() {
 							}
 						/>
 						<Route
-							path="/management-of-manual-payment"
+							path="/management-of-external-payment"
 							element={
 								<Layout>
 									<ManagementOfManualPayment />
