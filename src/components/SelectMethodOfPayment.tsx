@@ -24,7 +24,7 @@ export default function SelectMethodOfPayment() {
     function handleSelectMethod(methodName: string) {
         // Normaliza el nombre para la ruta
         const route = `/payment/${methodName.toLowerCase().replace(/\s+/g, "-")}`;
-        console.log(route)
+        navigate(route);
 
     }
     function getPaymentIcon(name: string) {

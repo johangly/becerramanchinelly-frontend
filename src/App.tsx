@@ -21,7 +21,6 @@ function App() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
-    console.log(selectedAppointment)
 
     function nextStep(appointmentData: AppointmentInterface, step: number) {
 		setSelectedAppointment(appointmentData);
@@ -67,7 +66,7 @@ function App() {
 					<>
 						{session?.user && (
 							<Route
-								path="/manual-payment"
+								path="/payment/pago-externo"
 								element={
 									<UserLayout isHomePage={isHomePage}>
 										<ManualPayment selectedAppointment={selectedAppointment} />
