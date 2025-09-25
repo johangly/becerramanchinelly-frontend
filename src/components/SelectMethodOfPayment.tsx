@@ -5,7 +5,7 @@ import axios, { isAxiosError } from "axios";
 import type { PaymentMethodResponseInterface } from "@/interfaces/paymentMethodInterface.ts";
 import { Banknote, HelpCircle } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { SignInButton, SignOutButton, UserButton } from '@clerk/clerk-react';
+import { SignInButton, UserButton } from '@clerk/clerk-react';
 import PaypalIcon from '@/components/icons/paypal.tsx'
 import StripeIcon from '@/components/icons/stripe.tsx'
 import type { AppointmentInterface } from '@/types';
