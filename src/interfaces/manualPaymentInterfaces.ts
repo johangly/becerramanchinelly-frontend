@@ -1,4 +1,4 @@
-export interface ManualPayment {
+export interface ExternalPayment {
   id: number;
   user_id: number;
   appointment_id: number;
@@ -44,11 +44,11 @@ export interface  ManualImagePayment{
 }
 export interface  ManualPaymentByIdInterface{
     paymentAppointment
-        : ManualPayment,
+        : ExternalPayment,
     imageOfPayment
         : ManualImagePayment[]
 }
 export interface ManualPaymentResponseInterface {
   status: string;
-  data: ManualPayment[];
+  data: ExternalPayment[];
 }

@@ -6,7 +6,7 @@ import {useSession} from '@clerk/clerk-react';
 import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
-import {strict} from "node:assert";
+// import {strict} from "node:assert";
 
 const dataEmpty = {
     amount: "",
@@ -49,10 +49,10 @@ export default function useManualPayment() {
     const handleSubmitChangeStatusOfManualPayment = useCallback(async () => {
         try {
             if (newStatusOfManualPayment && infoOfManualPaymentById) {
-                const response = axios.put(`${import.meta.env.VITE_API_BASE_URL}/manual-payments/${infoOfManualPaymentById.paymentAppointment.id}`, {
+                axios.put(`${import.meta.env.VITE_API_BASE_URL}/manual-payments/${infoOfManualPaymentById.paymentAppointment.id}`, {
                     status: newStatusOfManualPayment
                 }).then(res => {
-                    if (res.status === 200) {
+                    if (res.status >= 200 && res.status < 300) {
                         toast.success("Estado del pago actualizado correctamente")
                         fetchAllManualPayments()
                         setShowModal(false)
@@ -145,7 +145,7 @@ export default function useManualPayment() {
             });
             submissionData.append("user_id", session?.user.id || "");
             submissionData.append("paymentImage", paymentImage);
-            const response = await axios
+            await axios
                 .post(
                     `${
                         import.meta.env.VITE_API_BASE_URL

@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import WeeklySchedule from '@/components/WeeklySchedule';
 import type { AppointmentInterface } from '@/types';
+import ArrowIcon from '@/components/icons/arrow';
 
 export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: AppointmentInterface, step: number) => void }) => {
   return (
@@ -9,8 +10,9 @@ export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: Appoint
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-white py-8"
+      className="min-h-screen flex flex-col justify-center items-center bg-white py-8"
     >
+      <ArrowIcon size={35} className="text-primary relative -top-19 animate-bounce" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-[#1e1e1e] sm:text-4xl">
@@ -25,13 +27,13 @@ export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: Appoint
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="bg-white shadow-xl rounded-lg overflow-hidden"
+          className="bg-white rounded-lg overflow-hidden"
         >
           <WeeklySchedule goToNextStep={goToNextStep} />
         </motion.div>
         
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>¿Necesitas ayuda? Contáctanos al +58 412-XXX-XXXX</p>
+          <p>¿Necesitas ayuda? Contáctanos al +52 22222480015</p>
         </div>
       </div>
     </motion.div>

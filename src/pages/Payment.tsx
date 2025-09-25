@@ -46,25 +46,25 @@ const Payment = ({ appointmentData }: { appointmentData: AppointmentInterface | 
     }
   };
 
-  const handleApprove = async (data: any, actions: any) => {
-    try {
-      // Here you would typically send the payment details to your backend
-      // and update the appointment status
-      console.log('Payment successful:', data);
+  // const handleApprove = async (data: any, actions: any) => {
+  //   try {
+  //     // Here you would typically send the payment details to your backend
+  //     // and update the appointment status
+  //     console.log('Payment successful:', data);
       
-      // Example API call to update appointment status
-      // await apiClient.patch(`/appointments/${appointmentData.id}`, {
-      //   status: 'reservado',
-      //   client_name: name,
-      //   client_email: email,
-      //   payment_id: data.paymentID
-      // });
+  //     // Example API call to update appointment status
+  //     // await apiClient.patch(`/appointments/${appointmentData.id}`, {
+  //     //   status: 'reservado',
+  //     //   client_name: name,
+  //     //   client_email: email,
+  //     //   payment_id: data.paymentID
+  //     // });
       
-      alert('¡Pago exitoso! Su cita ha sido reservada.');
-    } catch (error) {
-      console.error('Error processing payment:', error);
-    }
-  };
+  //     alert('¡Pago exitoso! Su cita ha sido reservada.');
+  //   } catch (error) {
+  //     console.error('Error processing payment:', error);
+  //   }
+  // };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">

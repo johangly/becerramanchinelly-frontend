@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import { Toaster } from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
+import { esES } from '@clerk/localizations'
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -16,12 +17,12 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} localization={esES}>
         <ThemeProvider>
           <App />
         </ThemeProvider>
       </ClerkProvider>
     </BrowserRouter>
-    <Toaster position="top-center" reverseOrder={false} />
+    <Toaster position="bottom-right" reverseOrder={false} />
   </StrictMode>,
 )

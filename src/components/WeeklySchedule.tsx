@@ -10,13 +10,13 @@ import {set} from "date-fns";
 import {twMerge} from "tailwind-merge";
 import {CalendarDays, ChevronDown, ChevronUp} from "lucide-react";
 
-type TimeSlot = {
-    id: number;
-    start_time: string;
-    end_time: string;
-    day: string;
-    status: string;
-};
+// type TimeSlot = {
+//     id: number;
+//     start_time: string;
+//     end_time: string;
+//     day: string;
+//     status: string;
+// };
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || "America/Caracas";
 
@@ -28,7 +28,7 @@ const WeeklySchedule = ({
         step: number
     ) => void;
 }) => {
-    const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+    // const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
     const [selectedDate] = useState(new TZDate(new Date(), ZONE));
     const [loading, setLoading] = useState(true);
     const [dayNames, setDayNames] = useState<DayInfo[]>([]);
@@ -39,46 +39,46 @@ const WeeklySchedule = ({
         string | null
     >(null);
     // Obtener la semana actual (lunes a sábado)
-    const getWeekDays = () => {
-        const start = startOfWeek(selectedDate, {weekStartsOn: 1}); // Lunes
-        return Array.from({length: 6}, (_, i) => addDays(start, i));
-    };
+    // const getWeekDays = () => {
+    //     const start = startOfWeek(selectedDate, {weekStartsOn: 1}); // Lunes
+    //     return Array.from({length: 6}, (_, i) => addDays(start, i));
+    // };
     // Obtener los horarios disponibles
-    const fetchAvailableSlots = async () => {
-        try {
-            setLoading(true);
-            const startDate = format(
-                startOfWeek(selectedDate, {weekStartsOn: 1}),
-                "yyyy-MM-dd"
-            );
-            const endDate = format(
-                addDays(new Date(startDate), 5),
-                "yyyy-MM-dd"
-            );
+    // const fetchAvailableSlots = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const startDate = format(
+    //             startOfWeek(selectedDate, {weekStartsOn: 1}),
+    //             "yyyy-MM-dd"
+    //         );
+    //         const endDate = format(
+    //             addDays(new Date(startDate), 5),
+    //             "yyyy-MM-dd"
+    //         );
 
-            const response = await apiClient.get(
-                `/appointments?startDate=${startDate}&endDate=${endDate}`
-            );
+    //         const response = await apiClient.get(
+    //             `/appointments?startDate=${startDate}&endDate=${endDate}`
+    //         );
 
-            if (response.data && Array.isArray(response.data)) {
-                setTimeSlots(response.data);
-            }
-        } catch (error) {
-            toast.error("Error al cargar los horarios disponibles");
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         if (response.data && Array.isArray(response.data)) {
+    //             setTimeSlots(response.data);
+    //         }
+    //     } catch (error) {
+    //         toast.error("Error al cargar los horarios disponibles");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     // Manejar la reserva de un horario
-    const handleReservation = async (slotId: number) => {
-        try {
-            toast.success("Redirigiendo al formulario de reserva...");
-            // Ejemplo: navigate(`/reservar/${slotId}`);
-        } catch (error) {
-            toast.error("Error al procesar la reserva");
-        }
-    };
+    // const handleReservation = async (slotId: number) => {
+    //     try {
+    //         toast.success("Redirigiendo al formulario de reserva...");
+    //         // Ejemplo: navigate(`/reservar/${slotId}`);
+    //     } catch (error) {
+    //         toast.error("Error al procesar la reserva");
+    //     }
+    // };
 
     // Agrupar citas por día
     const appointmentsByDay = appointments.reduce<
@@ -162,7 +162,7 @@ const WeeklySchedule = ({
                         },
                     }
                 );
-                if (response.statusText === "OK") {
+                if (response.status >= 200 && response.status < 300) {
                     setAppointments(response.data.appointments);
                     setLoading(false);
                 } else {
@@ -187,12 +187,12 @@ const WeeklySchedule = ({
     }
 
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 border-b border-[#ffffff] text-cent">
-                    <h2 className="text-4xl text-center text-[#1e1e1e]">
+                    {/* <h2 className="text-4xl text-center text-[#1e1e1e]">
                         Horarios Disponibles
-                    </h2>
+                    </h2> */}
                 </div>
 
                 <div className="p-4">
@@ -217,7 +217,7 @@ const WeeklySchedule = ({
                             return (
                                 <div
                                     key={dayKey}
-                                    className={`bg-[#ffffff] border rounded-lg overflow-hidden transition-colors ${
+                                    className={`bg-[#ffffff] border overflow-hidden transition-colors ${
                                         isSelected
                                             ? "border-[#bd9554] shadow-sm shadow-[#bd9554]"
                                             : "border-[#bd9554] hover:border-gray-300"
@@ -230,13 +230,13 @@ const WeeklySchedule = ({
                                     }}
                                 >
                                     <div
-                                        className={`text-[#1e1e1e] flex cursor-pointer ${
+                                        className={`text-[#1e1e1e] h-[90px]  flex cursor-pointer ${
                                             isSelected
-                                                ? "bg-gray-100"
+                                                ? "bg-gray-100 border-b border-primary"
                                                 : "hover:opacity-90"
                                         }`}
                                     >
-                                        <div className="bg-[#bd9554]  w-20 h-20 flex items-center justify-center">
+                                        <div className="bg-[#bd9554]  w-30 h-full flex items-center justify-center">
                                             <CalendarDays
                                                 color="#ffffff"
                                                 size={48}
@@ -336,7 +336,7 @@ const WeeklySchedule = ({
                                                                             key={
                                                                                 idx
                                                                             }
-                                                                            className="bg-gray-100 p-3 rounded-md shadow-sm"
+                                                                            className="bg-gray-100 p-3 border border-primary-50"
                                                                         >
                                                                             <div
                                                                                 className="flex justify-start items-center space-x-3">

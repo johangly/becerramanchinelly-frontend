@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.46.0",
+    "@clerk/localizations": "^3.25.3",
     "@date-fns/tz": "^1.4.1",
     "@paypal/react-paypal-js": "^8.9.1",
     "@radix-ui/react-dropdown-menu": "^2.1.16",

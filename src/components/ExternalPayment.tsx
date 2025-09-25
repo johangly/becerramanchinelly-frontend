@@ -11,13 +11,13 @@ import {
     BadgeDollarSign,
     CheckCircle,
     XCircle,
-    Ban,
     Loader2
 } from "lucide-react";
 import {motion} from "motion/react";
 import {Toaster} from "react-hot-toast";
 import useManualPayment from "@/hooks/useManualPayment";
 import type {AppointmentInterface} from "@/types";
+import type { JSX } from "react";
 
 interface ManualPaymentsProps {
     selectedAppointment: AppointmentInterface | null;
@@ -34,7 +34,7 @@ const inputs = [
     {label: "Imagen del Pago", name: "paymentImage", type: "file", icon: Image},
 ]
 
-export default function ManualPayment({selectedAppointment}: ManualPaymentsProps) {
+export default function ExternalPayment({selectedAppointment}: ManualPaymentsProps) {
     const {
         formData,
         previewImage,
@@ -56,11 +56,9 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
     };
     const status = statusMap[selectedAppointment ? selectedAppointment.status : ""];
     return (
-        <div className="container max-md:flex max-md:flex-col flex mx-auto px-4 py-6 gap-4 ">
-            <Toaster position="top-center" reverseOrder={false}/>
-
+        <div className="min-h-screen w-full max-md:flex max-md:flex-col flex justify-center mx-auto px-4 py-6 space-x-6 space-y-6 mt-[70px]">
             {selectedAppointment ? (
-                <div className="w-1/4 size-fit shadow-sm rounded-lg p-6 border border-gray-200">
+                <div className="w-full bg-gray-100 max-w-fit size-fit p-6 border border-gray-200">
                     <h3 className="text-2xl font-semibold mb-4 text-[#bd9554]">Detalles de la Cita</h3>
                     <ul className="space-y-4 text-[#1e1e1e]">
                         <li>
@@ -83,7 +81,7 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                 </div>
             ):
             (
-                <div className="w-1/4 size-fit shadow-sm rounded-lg p-6 border border-gray-200 flex items-center justify-center">
+                <div className="w-1/4 bg-gray-100 size-fit shadow-sm p-6 border border-gray-200 flex items-center justify-center">
                     <p className="text-gray-400">No hay ninguna cita seleccionada</p>
                 </div>
             )}
@@ -91,24 +89,24 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                 initial={{y: -100, opacity: 0}}
                 animate={{y: 0, opacity: 1}}
                 exit={{scale: 0.5, opacity: 0}}
-                className="bg-white rounded-lg flex flex-col items-center overflow-hidden"
+                className="bg-gray-100 max-w-[700px] w-full border border-gray-200 p-6 flex flex-col items-center overflow-hidden"
             >
-                    <h2 className="text-4xl font-bold mb-4 text-[#bd9554]">
-                        Formulario de Pago Manual
-                    </h2>
-                <p className="text-gray-600">
+                <h2 className="text-4xl font-bold mb-4 text-[#bd9554]">
+                    Formulario de Pago Manual
+                </h2>
+                <p className="text-gray-600 ">
                     Una vez que hayas completado y enviado el
                     formulario, nos pondremos en contacto contigo al
                     verificar el pago.
                 </p>
                 <form
                     onSubmit={handleSubmit}
-                    className="w-full p-6 grid grid-cols-2 gap-4"
+                    className="w-full py-6 grid grid-cols-2 gap-4"
                 >
                     {inputs.map(({label, name, type, icon: Icon}) => (
                         <div key={name} className={name === "notes" || name === "paymentImage" ? "col-span-2" : ""}>
                             <div className="flex items-center gap-2">
-                                <Icon className="text-[#bd9554]"/>
+                                <Icon className="text-[#bd9554]" size={20}/>
                                 <label
                                     htmlFor={name}
                                     className="block text-[#1e1e1e] font-medium"
@@ -120,13 +118,14 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                                 <textarea
                                     id={name}
                                     name={name}
+                                    style={{maxHeight: "250px",minHeight: "100px"}}
                                     value={formData[name as keyof typeof formData] as string}
                                     onChange={handleChange}
-                                    className="w-full shadow-sm border border-gray-200 mt-2 rounded-md p-2 text-[#1e1e1e]"
+                                    className="w-full shadow-sm bg-white border border-gray-200 mt-2 p-2 text-[#1e1e1e]"
                                 ></textarea>
                             ) : type === "file" ? (
                                 <>
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-500">
                                         Sube una imagen del comprobante de pago
                                     </p>
                                     <input
@@ -135,7 +134,7 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                                         name={name}
                                         accept="image/*"
                                         onChange={handleImageChange}
-                                        className="w-full shadow-sm border border-gray-200 mt-2 rounded-md p-2 text-[#1e1e1e]"
+                                        className="w-full shadow-sm border bg-white border-gray-200 mt-2 p-5 text-[#1e1e1e]"
                                     />
                                     {previewImage && (
                                         <div className="mt-4">
@@ -145,7 +144,7 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                                             <img
                                                 src={previewImage}
                                                 alt="Vista previa del pago"
-                                                className="shadow- p-2 w-full h-auto rounded-md"
+                                                className="shadow-sm p-2 w-full h-auto"
                                             />
                                         </div>
                                     )}
@@ -157,16 +156,15 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                                     name={name}
                                     value={formData[name as keyof typeof formData] as string}
                                     onChange={handleChange}
-                                    className="w-full shadow-sm border border-gray-200 mt-2 rounded-md p-2 text-[#1e1e1e]"
+                                    className="w-full shadow-sm bg-white border border-gray-200 mt-2 p-2 text-[#1e1e1e]"
                                 />
                             )}
                         </div>
                     ))}
-
                     <div className="col-span-2">
                         <button
                             type="submit"
-                            className="bg-[#1e1e1e] h-12 text-white px-4 py-2 rounded-md hover:bg-[#1e1e1ed4] transition-colors w-full "
+                            className="bg-[#1e1e1e] h-12 text-white px-4 py-2 hover:bg-[#1e1e1ed4] transition-colors w-full cursor-pointer"
                         >
                             Enviar
                         </button>

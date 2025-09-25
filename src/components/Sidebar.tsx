@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { ChevronLeft, Phone, CreditCard } from 'lucide-react';
+import { ChevronLeft, CreditCard } from 'lucide-react';
 import type { SidebarProps } from '../types/index';
 import { twMerge } from 'tailwind-merge';
 import PayPalIcon from '@/components/icons/paypal';
