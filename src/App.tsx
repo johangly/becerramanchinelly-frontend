@@ -29,39 +29,35 @@ function App() {
 
 	return (
 		<div className={`${isHomePage ? "app" : ""}`}>
-			<Routes>
-				{session?.user && session?.publicUserData?.identifier === adminEmail ? (
-					<>
-						<Route path="/" element={
-							<main className="main" style={{
-								minHeight: 'calc(100vh - 70px)'
-							}}>
-								<Layout>
-									<AdminApp />
-								</Layout>
-							</main>
-						} />
-						<Route
-							path="*"
-							element={
-								<Layout>
+			{session?.user && session?.publicUserData?.identifier === adminEmail ? (
+				<main className="main" style={{
+					minHeight: 'calc(100vh - 70px)'
+				}}>
+					<Layout>
+						<Routes>
+							<Route path="/" element={
+								<AdminApp />
+							} />
+							<Route
+								path="*"
+								element={
 									<div className="text-center min-h-screen w-full text-gray-400 text-sm py-2 flex justify-center items-center">
 										404 - Página no encontrada
 									</div>
-								</Layout>
-							}
-						/>
-						<Route
-							path="/management-of-external-payment"
-							element={
-								<Layout>
+								}
+							/>
+							<Route
+								path="/management-of-external-payment"
+								element={
 									<ManagementOfManualPayment />
-								</Layout>
-							}
-						/>
-					</>
+								}
+							/>
+						</Routes>
 
-				) : (
+					</Layout>
+				</main>
+			) : (
+				<Routes>
 					<>
 						{session?.user && (
 							<Route
@@ -89,8 +85,10 @@ function App() {
 							</UserLayout>
 						} />
 					</>
-				)}
-			</Routes>
+				</Routes>
+			)}
+
+
 
 		</div>
 	);
