@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Moon, Sun, CalendarDays, HandCoins, Settings, PieChart } from 'lucide-react';
+import { CalendarDays, HandCoins, Settings, PieChart } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext.tsx';
 import { Toaster } from 'react-hot-toast';
 import type { MenuItem } from '../types';
@@ -13,7 +12,7 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { session } = useSession();
   console.log('session', session)

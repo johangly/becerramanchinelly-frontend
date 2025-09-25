@@ -7,7 +7,7 @@ import { useSession } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { AppointmentInterface } from './types';
-import Payment from './pages/Payment';
+// import Payment from './pages/Payment';
 import { Layout } from './components/Layout';
 import ManualPayment from "./components/ManualPayment";
 import ManagementOfManualPayment from './components/ManagementOfManualPayment';
@@ -16,15 +16,13 @@ import SelectMethodOfPayment from "@/components/SelectMethodOfPayment.tsx";
 function App() {
 	const { session } = useSession();
 	const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-	const [step, setStep] = useState(1);
 	const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
 
-    function nextStep(appointmentData: AppointmentInterface, step: number) {
+    function nextStep(appointmentData: AppointmentInterface) {
 		setSelectedAppointment(appointmentData);
-		setStep(step);
 		navigate('/pago');
 	}
 

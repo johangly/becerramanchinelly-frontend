@@ -11,13 +11,13 @@ import {
     BadgeDollarSign,
     CheckCircle,
     XCircle,
-    Ban,
     Loader2
 } from "lucide-react";
 import {motion} from "motion/react";
 import {Toaster} from "react-hot-toast";
 import useManualPayment from "@/hooks/useManualPayment";
 import type {AppointmentInterface} from "@/types";
+import type { JSX } from "react";
 
 interface ManualPaymentsProps {
     selectedAppointment: AppointmentInterface | null;
