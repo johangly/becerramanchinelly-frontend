@@ -12,6 +12,7 @@ import { Layout } from './components/Layout';
 import ExternalPayment from "./components/ExternalPayment";
 import ManagementOfManualPayment from './components/ManagementOfManualPayment';
 import SelectMethodOfPayment from "@/components/SelectMethodOfPayment.tsx";
+import StripePayment from "@/components/StripePayment.tsx";
 
 function App() {
 	const { session } = useSession();
@@ -59,14 +60,24 @@ function App() {
 				<Routes>
 					<>
 						{session?.user && (
-							<Route
+							<>
+                            <Route
 								path="/payment/pago-externo"
 								element={
 									<UserLayout isHomePage={isHomePage}>
 										<ExternalPayment selectedAppointment={selectedAppointment} />
 									</UserLayout>
 								}
+							/><Route
+								path="/payment/stripe"
+								element={
+									<UserLayout isHomePage={isHomePage}>
+										<StripePayment selectedAppointment={selectedAppointment} />
+									</UserLayout>
+								}
 							/>
+                            </>
+
 						)}
 						<Route path="/" element={
 							<UserLayout isHomePage={isHomePage}>
