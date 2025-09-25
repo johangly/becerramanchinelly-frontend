@@ -81,7 +81,7 @@ function App() {
 						)}
 						<Route path="/" element={
 							<UserLayout isHomePage={isHomePage}>
-								<Home goToNextStep={nextStep} />
+								<Home goToNextStep={nextStep} session={session} />
 							</UserLayout>
 						} />
 						<Route path="/pago" element={

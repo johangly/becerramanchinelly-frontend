@@ -167,8 +167,6 @@ const AdminApp = () => {
 
     const dayNames: DayInfo[] = getCurrentWeekDates();
 
-    console.log('dayNames', dayNames);
-
     // Cargar citas al montar el componente
     useEffect(() => {
         const fetchAppointments = async () => {

@@ -15,7 +15,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isDark } = useTheme();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { session } = useSession();
-  console.log('session', session)
   const menuItems: MenuItem[] = useMemo(() => {
     const baseItems: MenuItem[] = [
 
@@ -104,7 +103,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         user={{ nombre: `${session?.publicUserData.firstName} ${session?.publicUserData.lastName}`, grupo: { nombre_grupo: "Administrador" } }} // Pasar el usuario actual al Sidebar
       />
       <div className="flex flex-col w-full">
-        <LayoutHeader />
+        <LayoutHeader session={session}/>
         <main className="mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto w-full">
           {children}
         </main>

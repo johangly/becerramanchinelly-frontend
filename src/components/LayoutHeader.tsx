@@ -2,7 +2,7 @@ import { motion } from "motion/react"
 import { SquareChartGantt } from "lucide-react"
 import { Moon, Sun, Bell, CheckCircle, XCircle, AlertTriangle, Info, Eye } from "lucide-react"
 import { useTheme } from "../contexts/ThemeContext"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Notification } from "../types/notifications"
 
 import {
@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-
 import { TZDate } from "react-day-picker"
+import { apiClient } from "@/api"
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
@@ -101,10 +101,34 @@ const mockNotifications: Notification[] = [
     }
 ];
 
-function LayoutHeader() {
+function LayoutHeader({ session }: { session: any }) {
     const { isDark, toggleTheme } = useTheme();
-    const [notifications] = useState<Notification[]>(mockNotifications);
+    const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
     const unreadCount = notifications.filter((n: Notification) => !n.seen).length;
+    // const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            if (session?.user?.id) {
+                try {
+                    // setLoading(true);
+                    const response = await apiClient.get(`/notifications/${session.user.id}`);
+                    if (response.data && response.data.notifications) {
+                        setNotifications(response.data.notifications);
+                    }
+                } catch (error) {
+                    console.error('Error fetching notifications:', error);
+                } finally {
+                    // setLoading(false);
+                }
+            }
+        };
+
+        fetchNotifications();
+    }, [session?.user?.id]);
+
+    console.log('notifications:', notifications)
+
     return (
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
             <div className="mx-auto px-4 sm:px-6 lg:px-6">
@@ -134,7 +158,7 @@ function LayoutHeader() {
                                 </SignInButton>
                             </SignedOut>
                             <SignedIn>
-                                <UserButton afterSignOutUrl="/" />
+                                <UserButton />
                             </SignedIn>
                         </div>
                         <DropdownMenu>
@@ -148,7 +172,7 @@ function LayoutHeader() {
                                     )}
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="dark:bg-gray-800 p-0 w-full max-w-[400px] border-gray-200 dark:border-gray-700 max-h-[400px] relative" align="end" side="bottom">
+                            <DropdownMenuContent className="dark:bg-gray-800 p-0 min-w-[300px] w-full max-w-[400px] border-gray-200 dark:border-gray-700 max-h-[400px] relative" align="end" side="bottom">
                                 <DropdownMenuLabel className="flex justify-between items-center sticky top-0 z-10 w-full bg-gray-100 dark:bg-gray-700 px-2 py-1.5">
                                     <span>Notificaciones</span>
                                     <div>
@@ -165,9 +189,13 @@ function LayoutHeader() {
                                     </div>
                                 </DropdownMenuLabel>
                                 <div className="p-1.5 space-y-1.5">
-                                    {notifications.map((notification) => (
+                                    {notifications.length > 0 ? notifications.map((notification) => (
                                         <NotificationItem key={notification.id} notification={notification} />
-                                    ))}
+                                    )) : (
+                                        <div className="p-2">
+                                            <p className="text-gray-500 text-center">No hay notificaciones pendientes</p>
+                                        </div>
+                                    )}
                                 </div>
                             </DropdownMenuContent>
                         </DropdownMenu>

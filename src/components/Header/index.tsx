@@ -55,8 +55,6 @@ export const Header = ({ isHomePage }: { isHomePage: boolean }) => {
 			window.removeEventListener('scroll', handleScroll);
 		};
 	}, [handleScroll]);
-	console.log(scrolled)
-	console.log(scrollY)
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -144,9 +142,8 @@ export const Header = ({ isHomePage }: { isHomePage: boolean }) => {
 					</div>
 					<ul className="flex flex-row items-center max-h-[70px] max-w-[667px] ml-[190px]">
 						{navLinks.map((link, index) => (
-							<li className="pr-[50px]">
+							<li className="pr-[50px]" key={index}>
 								<a
-									key={index}
 									href={link.href}
 									className="nav-link pb-3 text-nowrap"
 								>

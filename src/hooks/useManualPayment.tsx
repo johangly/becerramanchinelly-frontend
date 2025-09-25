@@ -143,7 +143,11 @@ export default function useManualPayment() {
             Object.entries(formData).forEach(([key, value]) => {
                 submissionData.append(key, value);
             });
-            submissionData.append("user_id", session?.user.id || "");
+            if (!session?.user.id) {
+                toast.error("Debe iniciar sesión para realizar un pago manual");
+                return;
+            }
+            submissionData.append("user_id", session?.user.id);
             submissionData.append("paymentImage", paymentImage);
             await axios
                 .post(

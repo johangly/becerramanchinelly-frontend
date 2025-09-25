@@ -3,10 +3,11 @@ import { motion } from 'framer-motion';
 import WeeklySchedule from '@/components/WeeklySchedule';
 import type { AppointmentInterface } from '@/types';
 import ArrowIcon from '@/components/icons/arrow';
+import { SignInButton, UserButton } from '@clerk/clerk-react';
 
-export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: AppointmentInterface, step: number) => void }) => {
+export const Home = ({ goToNextStep, session }: { goToNextStep: (appointmentData: AppointmentInterface, step: number) => void, session: any }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
@@ -16,13 +17,13 @@ export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: Appoint
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-[#1e1e1e] sm:text-4xl">
-              Bienvenido a <span className='text-[#bd9554]'>Becerra Manchinelly</span>
+            Bienvenido a <span className='text-[#bd9554]'>Becerra Manchinelly</span>
           </h1>
           <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
             Selecciona un horario disponible para tu cita
           </p>
         </div>
-        
+
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -31,10 +32,49 @@ export const Home = ({ goToNextStep }: { goToNextStep: (appointmentData: Appoint
         >
           <WeeklySchedule goToNextStep={goToNextStep} />
         </motion.div>
-        
+
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>¿Necesitas ayuda? Contáctanos al +52 22222480015</p>
         </div>
+        {session?.user ? (
+          <div className="mt-8 flex justify-center items-center w-full space-x-2">
+            <UserButton />
+          </div>
+        ) : (
+          <div className="mt-8 flex justify-center items-center w-full space-x-2">
+            <span className='text-gray-700'>¿No tienes cuenta?</span>
+            <SignInButton mode="modal" appearance={{
+              elements: {
+                input: {
+                  padding: "18px 8px",
+                  borderRadius: "0",
+                },
+                button: {
+                  color: "primary",
+                  borderRadius: "0",
+                  padding: "15px 8px",
+                  fontSize: "0.7rem",
+                  fontWeight: "regular",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#bd9554",
+                  },
+                },
+              },
+            }}>
+              <motion.button
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="cursor-pointer text-blue-600 max-w-[220px]">Iniciar Sesión</motion.button>
+            </SignInButton>
+          </div>
+        )}
       </div>
     </motion.div>
   );

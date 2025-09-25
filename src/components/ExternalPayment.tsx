@@ -88,7 +88,7 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                 initial={{y: -100, opacity: 0}}
                 animate={{y: 0, opacity: 1}}
                 exit={{scale: 0.5, opacity: 0}}
-                className="bg-gray-100 max-w-[700px] w-full border border-gray-200 p-6 flex flex-col items-center overflow-hidden"
+                className="bg-gray-100 h-fit max-w-[700px] w-full border border-gray-200 p-6 flex flex-col items-center overflow-hidden"
             >
                 <h2 className="text-4xl font-bold mb-4 text-[#bd9554]">
                     Formulario de Pago Manual
