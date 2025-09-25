@@ -373,7 +373,8 @@ const WeeklySchedule = ({
                                                                                             2
                                                                                         )
                                                                                     }}
-                                                                                    className="bg-[#1e1e1e] text-white px-2 py-1 rounded-md hover:opacity-70 transition-colors"
+                                                                                    disabled={appt.status !=="disponible"}
+                                                                                    className="bg-[#1e1e1e] text-white px-2 py-1 rounded-md hover:opacity-70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                 >
                                                                                     Reservar
                                                                                 </button>
