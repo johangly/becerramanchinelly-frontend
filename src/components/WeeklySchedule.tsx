@@ -187,12 +187,12 @@ const WeeklySchedule = ({
     }
 
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 border-b border-[#ffffff] text-cent">
-                    <h2 className="text-4xl text-center text-[#1e1e1e]">
+                    {/* <h2 className="text-4xl text-center text-[#1e1e1e]">
                         Horarios Disponibles
-                    </h2>
+                    </h2> */}
                 </div>
 
                 <div className="p-4">
@@ -216,7 +216,7 @@ const WeeklySchedule = ({
                             return (
                                 <div
                                     key={dayKey}
-                                    className={`bg-[#ffffff] border rounded-lg overflow-hidden transition-colors ${
+                                    className={`bg-[#ffffff] border overflow-hidden transition-colors ${
                                         isSelected
                                             ? "border-[#bd9554] shadow-sm shadow-[#bd9554]"
                                             : "border-[#bd9554] hover:border-gray-300"
@@ -229,13 +229,13 @@ const WeeklySchedule = ({
                                     }}
                                 >
                                     <div
-                                        className={`text-[#1e1e1e] flex cursor-pointer ${
+                                        className={`text-[#1e1e1e] h-[90px]  flex cursor-pointer ${
                                             isSelected
-                                                ? "bg-gray-100"
+                                                ? "bg-gray-100 border-b border-primary"
                                                 : "hover:opacity-90"
                                         }`}
                                     >
-                                        <div className="bg-[#bd9554]  w-20 h-20 flex items-center justify-center">
+                                        <div className="bg-[#bd9554]  w-30 h-full flex items-center justify-center">
                                             <CalendarDays
                                                 color="#ffffff"
                                                 size={48}
@@ -321,7 +321,7 @@ const WeeklySchedule = ({
                                                                             key={
                                                                                 idx
                                                                             }
-                                                                            className="bg-gray-100 p-3 rounded-md shadow-sm"
+                                                                            className="bg-gray-100 p-3 border border-primary-50"
                                                                         >
                                                                             <div
                                                                                 className="flex justify-start items-center space-x-3">

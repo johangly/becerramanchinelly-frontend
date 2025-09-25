@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import type { AppointmentInterface } from './types';
 // import Payment from './pages/Payment';
 import { Layout } from './components/Layout';
-import ManualPayment from "./components/ManualPayment";
+import ExternalPayment from "./components/ExternalPayment";
 import ManagementOfManualPayment from './components/ManagementOfManualPayment';
 import SelectMethodOfPayment from "@/components/SelectMethodOfPayment.tsx";
 
@@ -27,7 +27,7 @@ function App() {
 	}
 
 	return (
-		<div className={`${isHomePage ? "app" : ""}`}>
+		<div>
 			{session?.user && session?.publicUserData?.identifier === adminEmail ? (
 				<main className="main" style={{
 					minHeight: 'calc(100vh - 70px)'
@@ -63,7 +63,7 @@ function App() {
 								path="/payment/pago-externo"
 								element={
 									<UserLayout isHomePage={isHomePage}>
-										<ManualPayment selectedAppointment={selectedAppointment} />
+										<ExternalPayment selectedAppointment={selectedAppointment} />
 									</UserLayout>
 								}
 							/>
@@ -75,7 +75,7 @@ function App() {
 						} />
 						<Route path="/pago" element={
 							<UserLayout isHomePage={isHomePage}>
-								<SelectMethodOfPayment />
+								<SelectMethodOfPayment session={session}/>
 							</UserLayout>
 						} />
 						<Route path="*" element={
@@ -96,15 +96,15 @@ function App() {
 export default App;
 
 function UserLayout({ children, isHomePage }: { children: React.ReactNode, isHomePage: boolean }) {
+
 	return (
 		<>
-			<Header />
-			<main className={`main ${isHomePage ? "" : "no-background"
+			<Header isHomePage={isHomePage} />
+			<main className={`userlayout main ${isHomePage ? "" : "no-background"
 				}`}>
 				{isHomePage && (
-					<section className="min-h-screen text-center flex flex-col justify-center items-center ">
-						<div className="mb-24">
-							<h1 className="text-4xl md:text-6xl text-white leading-20">
+					<section className="min-h-[821.84px] mt-[2px] text-center flex flex-col space-y-5 justify-center items-center">
+							<h1 className="text-[74px] font-[300] leading-[88.8px] text-white h-[177.89px]">
 								Firma{" "}
 								<span className="text-[#bd9554]">
 									Legal
@@ -112,14 +112,13 @@ function UserLayout({ children, isHomePage }: { children: React.ReactNode, isHom
 								<br />
 								Mexicana <br />
 							</h1>
-							<div className="flex items-center gap-4 mt-8">
-								<div className="border border-white w-20 h-0"></div>
-								<p className="font-bold text-white textWithPoppins tracking-[5px]">
+							<div className="flex items-center mt-[2px] mb-[3.75px] mx-[3.75px]">
+								<div className="bg-white mr-[12px] h-[1px] w-[52.5px]"></div>
+								<p className="font-[600] text-[15px] text-white textWithPoppins tracking-[2px]">
 									+ DE 40 AÑOS DE EXPERIENCIA
 								</p>
-								<div className="border border-white w-30 h-0 "></div>
+								<div className="bg-white ml-[12px] h-[1px] w-[52.5px]"></div>
 							</div>
-						</div>
 					</section>
 				)}
 				{children}
