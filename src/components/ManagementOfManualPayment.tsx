@@ -151,7 +151,7 @@ export default function ManagementOfManualPayment() {
                                         <strong>Monto:</strong> {payment.amount} {payment.currency}
                                     </p>
                                     <p>
-                                        <strong>Referencia:</strong> {payment.reference}
+                                        <strong>Referencia:</strong> <span className="text-wrap break-words">{payment.reference}</span>
                                     </p>
                                     <p>
                                         <strong>Fecha:</strong>{" "}

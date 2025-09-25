@@ -80,13 +80,13 @@ export default function Success() {
                             </svg>
                             <h1 className="text-3xl font-bold text-green-600 mb-2">¡Pago realizado con éxito!</h1>
                             <p className="text-gray-700 mb-6">Gracias por tu compra, {paymentData.customer_details.name || "usuario"}.</p>
-                            <div className="text-left w-full max-w-xs ">
+                            <div className="text-left text-gray-800 w-full max-w-xs ">
                                 <p className='text-wrap break-words'><span className="font-semibold break-words">Operación:</span> {paymentData.id}</p>
                                 <p><span className="font-semibold">Monto:</span> ${(paymentData.amount_total / 100).toFixed(2)}</p>
                                 <p><span className="font-semibold">Estado:</span> {paymentData.payment_status}</p>
                                 <p><span className="font-semibold">Email:</span> {paymentData.customer_details.email}</p>
                             </div>
-                            <p className="text-gray-700 mt-6 mb-6 text-primary font-bold">Nos estaremos comunicando contigo.</p>
+                            <p className="text-gray-700 mt-6 mb-6 text-primary font-bold">Nos estaremos comunicando contigo en breve.</p>
                             <a
                                 href="/"
                                 className="mt-6 inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded transition"
