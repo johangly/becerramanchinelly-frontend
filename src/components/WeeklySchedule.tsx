@@ -198,6 +198,7 @@ const WeeklySchedule = ({
                 <div className="p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {dayNames.map((dayInfo) => {
+
                             const dayKey = format(
                                 dayInfo.fullDate,
                                 "yyyy-MM-dd"
@@ -309,6 +310,7 @@ const WeeklySchedule = ({
                                                             dayKey
                                                             ]?.length >
                                                         0 ? (
+
                                                             <ul className="space-y-2">
                                                                 {appointmentsByDay[
                                                                     dayKey
@@ -316,7 +318,20 @@ const WeeklySchedule = ({
                                                                     (
                                                                         appt,
                                                                         idx
-                                                                    ) => (
+                                                                    ) => {
+                                                                        const dayDate = appt.day.toString().split("T")[0];
+                                                                        const appointmentDateTime = new Date(`${dayDate}T${appt.start_time}`);
+                                                                        const dateNow = new Date()
+                                                                        const dateAppointmentIsExpired = appointmentDateTime < dateNow;
+                                                                        console.log(
+                                                                            dayDate,
+                                                                            appointmentDateTime,
+                                                                            dateNow,
+                                                                            dateAppointmentIsExpired
+                                                                        )
+
+
+                                                                        return (
                                                                         <li
                                                                             key={
                                                                                 idx
@@ -365,6 +380,14 @@ const WeeklySchedule = ({
                                                                                                 ? "Completado"
                                                                                                 : "Cancelado"}
 																				</span>
+                                                                                { dateAppointmentIsExpired ? (
+                                                                                    <button
+                                                                                        disabled
+                                                                                        className="bg-gray-400 text-white px-2 py-1 rounded-md cursor-not-allowed"
+                                                                                    >
+                                                                                        Expirada
+                                                                                    </button>
+                                                                                ) :(
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
@@ -377,10 +400,12 @@ const WeeklySchedule = ({
                                                                                     className="bg-[#1e1e1e] text-white px-2 py-1 rounded-md hover:opacity-70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                 >
                                                                                     Reservar
-                                                                                </button>
+                                                                                </button>)
+                                                                                }
                                                                             </div>
                                                                         </li>
                                                                     )
+                                                                    }
                                                                 )}
                                                             </ul>
                                                         ) : (

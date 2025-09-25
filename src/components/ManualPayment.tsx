@@ -93,9 +93,9 @@ export default function ManualPayment({selectedAppointment}: ManualPaymentsProps
                 exit={{scale: 0.5, opacity: 0}}
                 className="bg-white rounded-lg flex flex-col items-center overflow-hidden"
             >
-                <h2 className="text-4xl font-bold mb-4 text-[#bd9554]">
-                    Formulario de Pago Manual
-                </h2>
+                    <h2 className="text-4xl font-bold mb-4 text-[#bd9554]">
+                        Formulario de Pago Manual
+                    </h2>
                 <p className="text-gray-600">
                     Una vez que hayas completado y enviado el
                     formulario, nos pondremos en contacto contigo al
