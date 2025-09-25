@@ -8,7 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { SignInButton, SignOutButton, UserButton } from '@clerk/clerk-react';
 import PaypalIcon from '@/components/icons/paypal.tsx'
 import StripeIcon from '@/components/icons/stripe.tsx'
-export default function SelectMethodOfPayment({ session }: { session: any }) {
+import type { AppointmentInterface } from '@/types';
+
+export default function SelectMethodOfPayment({ session ,selectedAppointment}: { session: any ,selectedAppointment: AppointmentInterface | null}) {
     const navigate = useNavigate();
     const [paymentsMethods, setPaymentsMethods] = React.useState<PaymentMethodResponseInterface | null>(null);
     const handleGetOfAllMethodsOfPayment = async () => {
@@ -23,6 +25,10 @@ export default function SelectMethodOfPayment({ session }: { session: any }) {
         }
     }
     function handleSelectMethod(methodName: string) {
+        if(selectedAppointment === null){
+            toast.error("Debes seleccionar una reserva");
+            return;
+        }
         // Normaliza el nombre para la ruta
         const route = `/payment/${methodName.toLowerCase().replace(/\s+/g, "-")}`;
         navigate(route);

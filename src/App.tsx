@@ -75,7 +75,7 @@ function App() {
 						} />
 						<Route path="/pago" element={
 							<UserLayout isHomePage={isHomePage}>
-								<SelectMethodOfPayment session={session}/>
+								<SelectMethodOfPayment session={session} selectedAppointment={selectedAppointment}/>
 							</UserLayout>
 						} />
 						<Route path="*" element={
