@@ -6,6 +6,7 @@ import {useSession} from '@clerk/clerk-react';
 import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
+import {strict} from "node:assert";
 
 const dataEmpty = {
     amount: "",
@@ -33,12 +34,12 @@ export default function useManualPayment() {
     const [idManualPayment, setIdManualPayment] = useState<number | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [dataFiltered, setDataFiltered] = useState(allManualPayments)
-    const [filter, setFilter] = useState("")
+    const [filter, setFilter] = useState("all")
     const [showImageModal, setShowImageModal] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const [newStatusOfManualPayment, setNewStatusOfManualPayment] = useState<string | null | undefined>(infoOfManualPaymentById?.paymentAppointment.status);
     useEffect(() => {
-        if (filter === "") {
+        if (filter === "all") {
             setDataFiltered(allManualPayments)
         } else {
             const filtered = allManualPayments?.data.filter(payment => payment.status === filter)
@@ -159,7 +160,7 @@ export default function useManualPayment() {
                 });
         } catch (error) {
             if (isAxiosError(error))
-                toast.error("Error submitting form. Please try again.");
+                toast.error(error.message);
         }
     };
     useEffect(() => {

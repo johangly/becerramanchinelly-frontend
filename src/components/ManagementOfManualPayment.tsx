@@ -93,12 +93,13 @@ export default function ManagementOfManualPayment() {
                             <Label htmlFor="status-select" className="px-1 flex-1 gap-3 flex flex-col justify-center items-start">
                                 Filtros
                                 <Select defaultValue={filter} onValueChange={(value) => setFilter(value)}>
-                                    <SelectTrigger id="status-select" className="w-full min-w-[150px]">
+                                    <SelectTrigger id="status-select" className="w-full min-w-[180px]">
                                         <SelectValue placeholder="Seleccionar estado" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Estado</SelectLabel>
+                                            <SelectItem value="all">Todos</SelectItem>
                                             <SelectItem value="pendiente">Pendiente</SelectItem>
                                             <SelectItem value="completado">Aprobado</SelectItem>
                                             <SelectItem value="fallido">Rechazado</SelectItem>

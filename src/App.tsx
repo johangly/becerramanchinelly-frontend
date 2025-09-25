@@ -11,6 +11,7 @@ import Payment from './pages/Payment';
 import { Layout } from './components/Layout';
 import ManualPayment from "./components/ManualPayment";
 import ManagementOfManualPayment from './components/ManagementOfManualPayment';
+import SelectMethodOfPayment from "@/components/SelectMethodOfPayment.tsx";
 
 function App() {
 	const { session } = useSession();
@@ -21,7 +22,7 @@ function App() {
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
 
-	function nextStep(appointmentData: AppointmentInterface, step: number) {
+    function nextStep(appointmentData: AppointmentInterface, step: number) {
 		setSelectedAppointment(appointmentData);
 		setStep(step);
 		navigate('/pago');
@@ -61,10 +62,10 @@ function App() {
 					<>
 						{session?.user && (
 							<Route
-								path="/manual-payment"
+								path="/payment/pago-externo"
 								element={
 									<UserLayout isHomePage={isHomePage}>
-										<ManualPayment />
+										<ManualPayment selectedAppointment={selectedAppointment} />
 									</UserLayout>
 								}
 							/>
@@ -76,7 +77,7 @@ function App() {
 						} />
 						<Route path="/pago" element={
 							<UserLayout isHomePage={isHomePage}>
-								<Payment appointmentData={selectedAppointment} />
+								<SelectMethodOfPayment />
 							</UserLayout>
 						} />
 						<Route path="*" element={

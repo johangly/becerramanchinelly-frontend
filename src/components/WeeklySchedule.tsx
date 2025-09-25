@@ -221,8 +221,8 @@ const WeeklySchedule = ({
                                             ? "border-[#bd9554] shadow-sm shadow-[#bd9554]"
                                             : "border-[#bd9554] hover:border-gray-300"
                                     }`}
-                                    onClick={() => {
-                                        // 🔹 Toggle: si haces click en el mismo día se cierra
+                                    onClick={(e) => {
+                                        e.stopPropagation()
                                         setExpandedDayKey(
                                             isSelected ? null : dayKey
                                         );
@@ -302,6 +302,7 @@ const WeeklySchedule = ({
                                                         height: 0,
                                                     }}
                                                     className="overflow-hidden"
+                                                    onClick={(e) => e.stopPropagation()}
                                                 >
                                                     <div className="p-3 space-y-2">
                                                         {appointmentsByDay[
@@ -365,12 +366,13 @@ const WeeklySchedule = ({
                                                                                                 : "Cancelado"}
 																				</span>
                                                                                 <button
-                                                                                    onClick={() =>
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
                                                                                         goToNextStep(
                                                                                             appt,
                                                                                             2
                                                                                         )
-                                                                                    }
+                                                                                    }}
                                                                                     className="bg-[#1e1e1e] text-white px-2 py-1 rounded-md hover:opacity-70 transition-colors"
                                                                                 >
                                                                                     Reservar
