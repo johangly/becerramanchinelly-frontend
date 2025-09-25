@@ -18,9 +18,9 @@ export default function StripePayment({selectedAppointment}: StripePaymentsProps
         cancelado: { icon: <XCircle className="text-red-500 inline" />, label: "Cancelado", color: "text-red-600" }
     };
     const status = statusMap[selectedAppointment ? selectedAppointment.status : ""];
-    // const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
-    // const start = selectedAppointment?.start_time;
-    // const end = selectedAppointment?.end_time;
+    const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
+    const start = selectedAppointment?.start_time;
+    const end = selectedAppointment?.end_time;
     const handleSubmitPaymentWithStripePayment = async (e:FormEvent): Promise<void> => {
         e.preventDefault();
 
@@ -64,13 +64,11 @@ export default function StripePayment({selectedAppointment}: StripePaymentsProps
                             <ul className="space-y-4 text-[#1e1e1e]">
                                 <li>
                                     <Calendar className="inline mr-2 text-[#bd9554]" />
-                                    <strong>Fecha:</strong> 
-                                    {/* {date} */}
+                                    <strong>Fecha:</strong> {date ? date : "N/A"}
                                 </li>
                                 <li>
                                     <Clock className="inline mr-2 text-[#bd9554]" />
-                                    <strong>Hora:</strong> 
-                                    {/* {start} - {end} */}
+                                    <strong>Hora:</strong> {start} - {end}
                                 </li>
                                 <li>
                                     <BadgeDollarSign className="inline mr-2 text-[#bd9554]" />

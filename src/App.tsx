@@ -13,6 +13,8 @@ import ExternalPayment from "./components/ExternalPayment";
 import ManagementOfManualPayment from './components/ManagementOfManualPayment';
 import SelectMethodOfPayment from "@/components/SelectMethodOfPayment.tsx";
 import StripePayment from "@/components/StripePayment.tsx";
+import Success from "@/components/StripeSucces.tsx";
+import StripeCancel from "@/components/StripeCancel.tsx";
 
 function App() {
 	const { session } = useSession();
@@ -76,6 +78,22 @@ function App() {
 									</UserLayout>
 								}
 							/>
+                                <Route
+                                    path="/success"
+                                    element={
+                                        <UserLayout isHomePage={isHomePage}>
+                                            <Success/>
+                                        </UserLayout>
+                                    }
+                                />
+                                <Route
+                                    path="/canceled"
+                                    element={
+                                    <UserLayout isHomePage={isHomePage}>
+                                        <StripeCancel/>
+                                    </UserLayout>
+                                    }
+                                />
                             </>
 
 						)}
