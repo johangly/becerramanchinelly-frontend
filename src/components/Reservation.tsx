@@ -182,7 +182,7 @@ const AdminApp = () => {
                         endDate: endDate?.toISOString()
                     }
                 });
-                if (response.statusText === 'OK') {
+                if (response.status >= 200 && response.status < 300) {
                     // console.log('appointments', response.data);
                     setAppointments(response.data.appointments);
                     setLoading(false);

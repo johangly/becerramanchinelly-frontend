@@ -162,7 +162,7 @@ const WeeklySchedule = ({
                         },
                     }
                 );
-                if (response.statusText === "OK") {
+                if (response.status >= 200 && response.status < 300) {
                     setAppointments(response.data.appointments);
                     setLoading(false);
                 } else {
