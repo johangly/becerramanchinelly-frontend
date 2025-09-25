@@ -64,7 +64,7 @@ export default function StripePayment({selectedAppointment}: StripePaymentsProps
                             <ul className="space-y-4 text-[#1e1e1e]">
                                 <li>
                                     <Calendar className="inline mr-2 text-[#bd9554]" />
-                                    <strong>Fecha:</strong> {date}
+                                    <strong>Fecha:</strong> {date ? date : "N/A"}
                                 </li>
                                 <li>
                                     <Clock className="inline mr-2 text-[#bd9554]" />
