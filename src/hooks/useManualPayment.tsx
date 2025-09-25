@@ -52,7 +52,7 @@ export default function useManualPayment() {
                 axios.put(`${import.meta.env.VITE_API_BASE_URL}/manual-payments/${infoOfManualPaymentById.paymentAppointment.id}`, {
                     status: newStatusOfManualPayment
                 }).then(res => {
-                    if (res.status === 200) {
+                    if (res.status >= 200 && res.status < 300) {
                         toast.success("Estado del pago actualizado correctamente")
                         fetchAllManualPayments()
                         setShowModal(false)
