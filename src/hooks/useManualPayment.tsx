@@ -6,7 +6,7 @@ import {useSession} from '@clerk/clerk-react';
 import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
-// import {strict} from "node:assert";
+import type {AppointmentInterface} from "@/types";
 
 const dataEmpty = {
     amount: "",
@@ -16,10 +16,13 @@ const dataEmpty = {
     client_email: "",
     client_phone: "",
     notes: "",
-    appointment_id: "1",
+    appointment_id: "",
 };
+interface ManualPaymentsProps {
+    selectedAppointment: AppointmentInterface | null;
+}
 
-export default function useManualPayment() {
+export default function useManualPayment({selectedAppointment}: ManualPaymentsProps) {
     const [formData, setFormData] = useState(dataEmpty);
     const {session} = useSession();
     const [allManualPayments, setAllManualPayments] = useState<ManualPaymentResponseInterface |
@@ -30,6 +33,8 @@ export default function useManualPayment() {
     const [previewImage, setPreviewImage] = useState<string | null>(
         null
     );
+    const [loading, setLoading] = useState(false);
+
     const [infoOfManualPaymentById, setInfoOfManualPaymentById] = useState<ManualPaymentByIdInterface | null>(null);
     const [idManualPayment, setIdManualPayment] = useState<number | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -120,6 +125,7 @@ export default function useManualPayment() {
     };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
         if (
             !formData.amount ||
             !formData.transactionDate ||
@@ -147,6 +153,10 @@ export default function useManualPayment() {
                 toast.error("Debe iniciar sesión para realizar un pago manual");
                 return;
             }
+            submissionData.set('appointment_id', selectedAppointment ? String(selectedAppointment.id) : "");
+            console.log(submissionData)
+
+
             submissionData.append("user_id", session?.user.id);
             submissionData.append("paymentImage", paymentImage);
             await axios
@@ -203,6 +213,7 @@ export default function useManualPayment() {
         setNewStatusOfManualPayment,
         newStatusOfManualPayment,
         filter,
-        setFilter
+        setFilter,
+        loading
     }
 }
