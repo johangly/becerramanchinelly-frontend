@@ -7,6 +7,7 @@ export interface Notification {
   type: NotificationType;
   seen: boolean;
   user_id: number;
+  modalBody: string;
   payment_id: number | null;
   createdAt: Date;
   updatedAt: Date;

@@ -16,7 +16,7 @@ import {
 import {motion} from "motion/react";
 import useManualPayment from "@/hooks/useManualPayment";
 import type {AppointmentInterface} from "@/types";
-import {type JSX, useCallback, useEffect} from "react";
+import {type JSX } from "react";
 
 interface ManualPaymentsProps {
     selectedAppointment: AppointmentInterface | null;

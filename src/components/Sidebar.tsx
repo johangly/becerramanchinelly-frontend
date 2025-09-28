@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
                   <div className={twMerge("flex flex-col max-h-[0px] overflow-hidden transition-all duration-200 ml-2", isCollapsed && "ml-0", openGestionOfPayment && "max-h-[500px] mt-2 ")}>
                     <div className={twMerge("flex flex-col h-auto overflow-hidden space-y-2", isCollapsed && "ml-0")}>
                       {paymentMethods.map((item, index) => (
-                        <motion.li
+                        <motion.div
                           key={item.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle, menuItems, use
                               </>
                             )}
                           </NavLink>
-                        </motion.li>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
