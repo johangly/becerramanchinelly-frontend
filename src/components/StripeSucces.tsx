@@ -1,4 +1,4 @@
-import useStripe from "@/useStripe.tsx";
+import useStripe from "@/hooks/useStripe.tsx";
 
 export default function Success() {
     const {paymentData, loading} = useStripe()
