@@ -134,14 +134,17 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
             !formData.client_phone
         ) {
             toast.error("Please fill in all required fields.");
+            setLoading(false);
             return;
         }
         if (formData.transactionDate > new Date().toISOString().split('T')[0]) {
             toast.error("Transaction date cannot be in the future.");
+            setLoading(false);
             return;
         }
         if (!paymentImage) {
             toast.error("Please upload a payment image.");
+            setLoading(false);
             return;
         }
         try {
@@ -151,11 +154,10 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
             });
             if (!session?.user.id) {
                 toast.error("Debe iniciar sesión para realizar un pago manual");
+                setLoading(false);
                 return;
             }
             submissionData.set('appointment_id', selectedAppointment ? String(selectedAppointment.id) : "");
-            console.log(submissionData)
-
 
             submissionData.append("user_id", session?.user.id);
             submissionData.append("paymentImage", paymentImage);
@@ -171,10 +173,13 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
                     setFormData(dataEmpty);
                     setPaymentImage(null);
                     setPreviewImage(null);
+                    setLoading(false);
                 });
         } catch (error) {
-            if (isAxiosError(error))
+            if (isAxiosError(error)) {
                 toast.error(error.message);
+            }
+            setLoading(false);
         }
     };
     useEffect(() => {
