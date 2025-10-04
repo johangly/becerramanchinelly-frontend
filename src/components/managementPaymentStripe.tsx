@@ -102,7 +102,7 @@ export const ManagementPaymentStripe = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
-                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-72"
+                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-90"
                             >
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white">

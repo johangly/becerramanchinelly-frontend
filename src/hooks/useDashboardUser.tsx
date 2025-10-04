@@ -1,15 +1,18 @@
-import {useCallback, useEffect, useState} from 'react'
+import {type MouseEvent, useCallback, useEffect, useState} from 'react'
 import {useSession} from "@clerk/clerk-react";
 import axios, {isAxiosError} from "axios";
 import toast from "react-hot-toast";
 import type {AppointmentsByUserApiResponse} from "@/interfaces/dashboardUserInterfaces.ts";
+import {catchError} from "../../Fetch.ts";
 
 export default function useDashboardUser() {
     const {session} = useSession()
     const [appointmentsOfUser, setAppointmentsOfUser] = useState<AppointmentsByUserApiResponse | null>(null)
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [idAppointment, setIdAppointment] = useState<number | null>(null);
     const urlBackend = import.meta.env.VITE_API_BASE_URL;
-
+    const [platform,setPlatform]= useState<number | null>(null)
 
     const fetchData =
         useCallback(async () => {
@@ -28,7 +31,20 @@ export default function useDashboardUser() {
             }, [session?.user.id, urlBackend]
         )
 
+async function handleChangePlatform (id: number) {
+    const promise = axios.put(`${urlBackend}/appointments/update-appointment-platform/${idAppointment}`, {
+        meetingPlatformId: id
+    })
+    const [data,error]= await catchError(promise)
 
+    if(!data) toast.error(error);
+    toast.success('Plataforma actualizada con éxito')
+    await fetchData()
+    setShowModal(false)
+    setIdAppointment(null)
+
+
+}
     function handleCancelAppointment(paymentId: number) {
         toast((t) => (
                 <span>¿Estás seguro de que deseas eliminar esta cita?
@@ -89,7 +105,11 @@ export default function useDashboardUser() {
     return {
         appointmentsOfUser,
         loading,
-        handleCancelAppointment
+        handleCancelAppointment,
+        setShowModal,
+        showModal,
+        setIdAppointment,
+handleChangePlatform
     }
 
 }

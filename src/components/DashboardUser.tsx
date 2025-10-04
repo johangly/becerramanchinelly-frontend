@@ -1,13 +1,22 @@
 import useDashboardUser from "@/hooks/useDashboardUser.tsx";
 import {Layout} from "@/components/Layout.tsx";
 import type {PaymentOfUser} from "@/interfaces/dashboardUserInterfaces.ts";
-import { motion } from "motion/react";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import {motion} from "motion/react";
+import {CheckCircle, XCircle, Clock} from "lucide-react";
 import {useSettings} from "@/hooks/useSettings.tsx";
+import Modal from "@/components/Modal.tsx";
 
 export default function DashboardUser() {
-    const {appointmentsOfUser,loading,handleCancelAppointment}= useDashboardUser()
-    const {allSettings, allMeetingPlatforms}= useSettings();
+    const {
+        appointmentsOfUser,
+        loading,
+        handleCancelAppointment,
+        showModal,
+        setShowModal,
+        handleChangePlatform,
+        setIdAppointment
+    } = useDashboardUser()
+    const {allSettings, allMeetingPlatforms} = useSettings();
     return (
         <Layout>
 
@@ -18,14 +27,44 @@ export default function DashboardUser() {
                     </div>
                 )
             }
+            {
+                showModal && (
+                    <Modal setShowModal={setShowModal} title={'Cambia la plataforma de Reunión'}>
+                        <div className="w-full">
+                            {
+                                !allMeetingPlatforms?.MeetingPlatforms ? (
+                                    <p>Cargando plataformas...</p>
+                                ) : allMeetingPlatforms?.MeetingPlatforms?.length === 0 ? (
+                                        <p>No hay plataformas de reunión disponibles.</p>
+                                    ) :
+                                    allMeetingPlatforms.MeetingPlatforms.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {allMeetingPlatforms.MeetingPlatforms.filter(plat => plat.is_active === true).map((platform) => (
+                                                <button key={platform.id}
+                                                        className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+                                                        value={platform.id}
+                                                        onClick={() => handleChangePlatform(platform.id)}>
+                                                    <h3 className="text-lg font-semibold mb-2">{platform.name}</h3>
+                                                    <p className="text-sm text-gray-600 mb-4">{platform.description}</p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p>No hay plataformas de reunión disponibles.</p>
+                                    )
+                            }
+                        </div>
+                    </Modal>
+                )
+            }
             <div>
                 <h1 className="text-2xl font-bold mb-4">Mis Citas</h1>
-                {(appointmentsOfUser === null || appointmentsOfUser.paymentsOfUser.length === 0) ?  (
+                {(appointmentsOfUser === null || appointmentsOfUser.paymentsOfUser.length === 0) ? (
                     <p>No tienes citas programadas.</p>
-                ):(
+                ) : (
                     <div
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-items-center content-center w-[100%]">
-                        {appointmentsOfUser.paymentsOfUser.map((payment:PaymentOfUser) => {
+                        {appointmentsOfUser.paymentsOfUser.map((payment: PaymentOfUser) => {
                             const dateWithHour = new Date(payment.Appointment.day).toLocaleDateString() + ' ' + payment.Appointment.start_time;
 
                             const now = new Date()
@@ -39,7 +78,7 @@ export default function DashboardUser() {
                                     animate={{opacity: 1, scale: 1}}
                                     exit={{opacity: 0, scale: 0.95}}
                                     transition={{duration: 0.3}}
-                                    className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-72"
+                                    className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-[400px]"
                                 >
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
@@ -104,24 +143,43 @@ export default function DashboardUser() {
                                         payment.status === 'reembolso' || payment.status === 'reembolsado' || payment.status === 'fallido' ? (
                                             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                                 Contacta a Soporte para más información. <br/>
-                                                <strong>Numero de contacto Whatsapp: {allSettings?.configs.find(set => set.key==='phone')?.value}
-</strong>
+                                                <strong>Numero de contacto
+                                                    Whatsapp: {allSettings?.configs.find(set => set.key === 'phone')?.value}
+                                                </strong>
                                             </p>
                                         ) : null
                                     }
-                                    { (diffHours > 8) &&
-                                        <motion.button
-                                            initial={{opacity: 0, scale: 0.95}}
-                                            animate={{opacity: 1, scale: 1}}
-                                            exit={{opacity: 0, scale: 0.95}}
-                                            transition={{duration: 0.2}}
-                                            whileHover={{scale: 1.05}}
-                                            whileTap={{scale: 0.95}}
-                                            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300 w-full"
-                                            onClick={() => handleCancelAppointment(payment.id)}
-                                        >
-                                            Cancelar Cita
-                                        </motion.button>
+                                    {(diffHours > 8) &&
+                                        <>
+                                            <motion.button
+                                                initial={{opacity: 0, scale: 0.95}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                exit={{opacity: 0, scale: 0.95}}
+                                                transition={{duration: 0.2}}
+                                                whileHover={{scale: 1.05}}
+                                                whileTap={{scale: 0.95}}
+                                                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300 w-full"
+                                                onClick={() => handleCancelAppointment(payment.id)}
+                                            >
+                                                Cancelar Cita
+                                            </motion.button>
+
+                                            <motion.button
+                                                initial={{opacity: 0, scale: 0.95}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                exit={{opacity: 0, scale: 0.95}}
+                                                transition={{duration: 0.2}}
+                                                whileHover={{scale: 1.05}}
+                                                whileTap={{scale: 0.95}}
+                                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300 w-full"
+                                                onClick={() => (setShowModal(true),
+                                                    setIdAppointment(payment.Appointment.id))
+                                                }
+                                            >
+                                                Editar Plataforma
+                                            </motion.button>
+
+                                        </>
                                     }
                                 </motion.div>)
                         })}
@@ -130,5 +188,5 @@ export default function DashboardUser() {
                 }
             </div>
         </Layout>
-        )
+    )
 }

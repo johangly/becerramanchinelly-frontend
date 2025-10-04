@@ -40,8 +40,7 @@ export const useLinkAppointment = () => {
     }
 
     async function generateLinkWithMeet() {
-        const handleMessage = async (e:FormEvent) => {
-            e.preventDefault()
+        const handleMessage = async () => {
             await fetch(`http://localhost:3000/api/generate-link/generate-meet-link/${idOfAppointment}`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -61,7 +60,7 @@ export const useLinkAppointment = () => {
                 });
         }
         const messageListener = (e:FormEvent) => {
-            handleMessage(e);
+            handleMessage();
             window.removeEventListener("message", messageListener);
             clearInterval(interval);
             win?.close();
@@ -70,11 +69,11 @@ export const useLinkAppointment = () => {
             , {once: true});
         const win = window.open(`${urlBack}/generate-link/auth`, "_blank", "width=500,height=600");
 
-        const interval = setInterval((e:FormEvent) => {
+        const interval = setInterval(() => {
             if (win && win.closed) {
                 clearInterval(interval);
                 win.close()
-                handleMessage(e)
+                handleMessage()
             } else {
                 try {
                     // Intenta leer el texto de la ventana hija
