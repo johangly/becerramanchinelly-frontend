@@ -22,30 +22,35 @@ export const useLinkAppointment = () => {
         setAllAppointments(data.data.appointments);
 
     }
+
     async function saveLink(e: FormEvent) {
         e.preventDefault()
         if (!urlMeet) return;
-        const [data,error]= await catchError(axios.put(`${urlBack}/generate-link/save-meet-link/${idOfAppointment}`, {link: urlMeet}));
+        const [data, error] = await catchError(axios.put(`${urlBack}/generate-link/save-meet-link/${idOfAppointment}`, {link: urlMeet}));
         if (!data) {
             toast.error(error)
             return
         }
+        setShowModal(false)
+        fetchAppointments()
         console.log(data)
 
         toast.success("Link guardado correctamente")
         fetchAppointments()
     }
+
     async function generateLinkWithMeet() {
-
-        const handleMessage = async () => {
-
+        const handleMessage = async (e:FormEvent) => {
+            e.preventDefault()
             await fetch(`http://localhost:3000/api/generate-link/generate-meet-link/${idOfAppointment}`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
             })
-                .then((res) => res.json())
+                .then((res) =>
+
+                        res.json())
                 .then((resData) => {
-                    setUrlMeet(resData.link);
+                    setUrlMeet(resData.link)
                     toast.success("Link generado: " + resData.link);
 
                 })
@@ -55,9 +60,39 @@ export const useLinkAppointment = () => {
                     toast.error("No se pudo generar el link");
                 });
         }
-        window.addEventListener("message", handleMessage
+        const messageListener = (e:FormEvent) => {
+            handleMessage(e);
+            window.removeEventListener("message", messageListener);
+            clearInterval(interval);
+            win?.close();
+        };
+         window.addEventListener("message", handleMessage
             , {once: true});
-        window.open(`${urlBack}/generate-link/auth`, "_blank", "width=500,height=600");
+        const win = window.open(`${urlBack}/generate-link/auth`, "_blank", "width=500,height=600");
+
+        const interval = setInterval((e:FormEvent) => {
+            if (win && win.closed) {
+                clearInterval(interval);
+                win.close()
+                handleMessage(e)
+            } else {
+                try {
+                    // Intenta leer el texto de la ventana hija
+                    const text = win?.document.body.innerText;
+                    if (text?.includes("Autenticación exitosa")) {
+                        // Aquí puedes hacer lo que necesites
+                        toast.success("Autenticación exitosa detectada.");
+                        clearInterval(interval);
+                        win?.close();
+                        fetchAppointments();
+                    }
+                } catch (e) {
+                    console.log(e)
+
+                    toast.error('Error')
+                }
+            }
+        }, 500);
     }
 
     useEffect(() => {
@@ -70,7 +105,7 @@ export const useLinkAppointment = () => {
         generateLinkWithMeet,
         urlMeet,
         setUrlMeet,
-        setShowModal,showModal,
+        setShowModal, showModal,
         saveLink,
         setIdOfAppointment
     }
