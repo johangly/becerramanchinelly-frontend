@@ -7,7 +7,7 @@ import axios, {isAxiosError} from 'axios';
 import React, {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast';
 import type {AppointmentInterface} from "@/types";
-
+import {useNavigate} from "react-router-dom";
 const dataEmpty = {
     amount: "",
     transactionDate: "",
@@ -43,11 +43,12 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
     const [showImageModal, setShowImageModal] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const [newStatusOfManualPayment, setNewStatusOfManualPayment] = useState<string | null | undefined>(infoOfManualPaymentById?.paymentAppointment.status);
+    const navigate = useNavigate();
     useEffect(() => {
         if (filter === "all") {
             setDataFiltered(allManualPayments)
         } else {
-            const filtered = allManualPayments?.data.filter(payment => payment.status === filter)
+            const filtered = allManualPayments?.data.filter(payment => payment.status === filter && payment.appointment_id )
             setDataFiltered({status: allManualPayments?.status || "", data: filtered || []})
         }
     }, [allManualPayments, filter])
@@ -101,6 +102,7 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
         }
     };
     const fetchAllManualPayments = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(
                 `${import.meta.env.VITE_API_BASE_URL}/manual-payments/`
@@ -109,6 +111,8 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
+        }finally {
+            setLoading(false);
         }
     };
     const fetchManualPaymentById = async (id: number) => {
@@ -170,6 +174,7 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
                 )
                 .then(() => {
                     toast.success("Form submitted successfully!");
+                    navigate("/selected-platform/" + selectedAppointment?.id);
                     setFormData(dataEmpty);
                     setPaymentImage(null);
                     setPreviewImage(null);

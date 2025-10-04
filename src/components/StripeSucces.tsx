@@ -1,7 +1,8 @@
 import useStripe from "@/hooks/useStripe.tsx";
 
 export default function Success() {
-    const {paymentData, loading} = useStripe()
+    const {paymentData, loading,appointmentId} = useStripe()
+
     if (loading) return <div>Cargando datos de pago...</div>;
 
     if (!paymentData) return <div>No se pudo obtener la información del pago.</div>;
@@ -44,10 +45,10 @@ export default function Success() {
                             <p className="text-gray-700 mt-6 mb-6 text-primary font-bold">Nos estaremos comunicando
                                 contigo en breve.</p>
                             <a
-                                href="/"
+                                href={`/selected-platform/${appointmentId}`}
                                 className="mt-6 inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded transition"
                             >
-                                Volver al inicio
+                                Elegir plataforma de reunión
                             </a>
                         </div>
             }

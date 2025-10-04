@@ -46,7 +46,7 @@ export default function Modal({
                             <XCircle size={20}/>
                         </button>
                     </div>
-                    <div className="p-2 relative flex flex-col w-full items-center">
+                    <div className="p-2 flex flex-col w-full">
                         {children}
                     </div>
             </motion.div>

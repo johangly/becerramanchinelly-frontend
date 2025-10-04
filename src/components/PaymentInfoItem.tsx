@@ -20,7 +20,7 @@ const PaymentInfoItem: React.FC<PaymentInfoItemProps> = ({
         <Icon className="w-4 h-4 text-[#bd9554]" />
         <strong>{label}:</strong>
       </p>
-      <span className="text-gray-900 dark:text-gray-100">
+      <span className="text-gray-900 dark:text-gray-100 text-ellipsis">
         {value}
       </span>
     </div>

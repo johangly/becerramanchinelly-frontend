@@ -3,21 +3,27 @@ import {useEffect, useState} from "react";
 import type {PaymentMethodResponseInterface} from "@/interfaces/paymentMethodInterface.ts";
 import toast from "react-hot-toast";
 import type {MeetingPlatformResponse} from "@/interfaces/meetingInterfaces.ts";
-import type {ConfigsResponse} from "../../settingsInterfaces.ts";
+import type {ConfigsResponse, CurrenciesResponse} from "../interfaces/settingsInterfaces.ts";
+import type {Config} from "../interfaces/settingsInterfaces.ts";
+import {catchError} from "../../Fetch.ts";
 
 const dataEmpty = {
     name: "",
     description: ""
 }
 
+
 export const useSettings = () => {
     const [allPaymentsMethods, setAllPaymentsMethods] = useState<PaymentMethodResponseInterface | null>(null);
     const [allMeetingPlatforms, setAllMeetingPlatforms] = useState< MeetingPlatformResponse | null>(null);
     const [allSettings, setAllSettings] = useState<ConfigsResponse | null>(null);
+    const [allCurrencies, setAllCurrencies] = useState<CurrenciesResponse | null >(null);
+    const [valueOfCurrencyMain, setValueOfCurrencyMain]=useState<string | null>(null);
+    const [valueOfPhone, setValueOfPhone] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState(dataEmpty)
-    console.log(allMeetingPlatforms)
+    const urlBack = import.meta.env.VITE_API_BASE_URL;
 
     const inputsRegisterPlatform = [
         {
@@ -37,7 +43,7 @@ export const useSettings = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL}/payment-methods/admin`
+                `${urlBack}/payment-methods/admin`
             );
 
             setAllPaymentsMethods(response.data);
@@ -56,7 +62,7 @@ export const useSettings = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL}/meetings`
+                `${urlBack}/meetings`
             );
             setAllMeetingPlatforms(response.data);
         } catch (error) {
@@ -70,15 +76,54 @@ export const useSettings = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL}/config`
+                `${urlBack}/config`
             );
             setAllSettings(response.data);
+            setValueOfCurrencyMain(response.data.configs.find((set:Config)=>set.key === 'currency')?.value);
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
         } finally {
             setLoading(false);
         }
+    }
+    async function    FetchAllCurrencies() {
+        setLoading(true);
+        try {
+            const response = await axios.get(
+                `${urlBack}/currencies`
+            );
+
+            setAllCurrencies(response.data);
+        } catch (error) {
+            if (isAxiosError(error))
+                toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+    const changePhone =async () => {
+        const id = allSettings?.configs.find(set=> set.key==='phone')?.id
+        if(!id) return;
+        if(!valueOfPhone){
+            toast.error("Por favor, ingresa un número de teléfono válido")
+            return;
+        }
+        const promise = axios.put(`${urlBack}/config/${id}`, {
+            newValues: {
+                value: valueOfPhone
+            }
+        })
+        const [data,error] = await catchError(promise)
+        if(!data){
+            toast.error(error)
+            return;
+        }
+        toast.success("Teléfono actualizado correctamente")
+        setValueOfPhone(null)
+        await FetchAllSettings()
+
+
     }
     async function RegisterNewMeetingPlatform() {
 
@@ -88,15 +133,14 @@ export const useSettings = () => {
         }
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/meetings`,
+                `${urlBack}/meetings`,
                 formData
             );
-            if (response.status >= 200 && response.status < 300) {
                 toast.success("Plataforma registrada correctamente")
                 FetchAllMeetingPlatforms()
                 setShowModal(false)
                 setFormData(dataEmpty)
-            }
+
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
@@ -105,7 +149,7 @@ export const useSettings = () => {
     async function FetchChangeStatusPaymentMethod(id: number, is_active: boolean) {
         try {
             await axios.put(
-                `${import.meta.env.VITE_API_BASE_URL}/payment-methods/${id}`,
+                `${urlBack}/payment-methods/${id}`,
                 {is_active: !is_active}
 
         );
@@ -118,16 +162,34 @@ export const useSettings = () => {
                 toast.error(error.message);
         }
     }
+    const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = event.target.value;
+        const id = allSettings?.configs.find(set => set.key==='currency')?.id
+        setValueOfCurrencyMain(selectedValue);
+        try {
+            await axios.put(
+                `${urlBack}/config/${id}`,
+                {newValues: {
+                        value: selectedValue
+                    }}
+            )
+            toast.success("Moneda principal actualizada correctamente")
+            await FetchAllSettings()
+        }catch (error) {
+            if (isAxiosError(error))
+                toast.error(error.message);
+        }
+    }
     async function FetchChangeStatusPlatform(id: number, is_active: boolean) {
         try {
             await axios.put(
-                `${import.meta.env.VITE_API_BASE_URL}/meetings/${id}`,
+                `${urlBack}/meetings/${id}`,
                 {is_active: !is_active}
 
             );
             toast.success("Estado del método de pago actualizado correctamente")
 
-            FetchAllMeetingPlatforms()
+            await FetchAllMeetingPlatforms()
 
         } catch (error) {
             if (isAxiosError(error))
@@ -139,6 +201,7 @@ export const useSettings = () => {
         FetchAllPaymentsMethods()
         FetchAllMeetingPlatforms()
         FetchAllSettings()
+        FetchAllCurrencies()
     }, []);
     return {
         allPaymentsMethods,
@@ -147,7 +210,13 @@ export const useSettings = () => {
         allMeetingPlatforms,
         showModal, setShowModal,inputsRegisterPlatform,handleChange,formData,
         RegisterNewMeetingPlatform,FetchChangeStatusPlatform,
-        allSettings
+        allSettings,
+        allCurrencies,
+        setValueOfCurrencyMain,
+        valueOfCurrencyMain,
+        handleSelectChange,
+        valueOfPhone,changePhone,setValueOfPhone
+
     }
 
 };

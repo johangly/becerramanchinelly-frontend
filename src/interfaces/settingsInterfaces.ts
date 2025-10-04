@@ -1,4 +1,4 @@
-interface Config {
+export interface Config {
     id: number;
     key: string;
     value: string;
@@ -10,4 +10,21 @@ interface Config {
 export interface ConfigsResponse {
     status: string;
     configs: Config[];
+}
+interface Currency {
+    id: number;
+    code: string;
+    name: string;
+    symbol: string;
+    decimal_places: number;
+    is_active: boolean;
+    is_default: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CurrenciesResponse {
+    status: string;
+        currencies: Currency[];
+
 }

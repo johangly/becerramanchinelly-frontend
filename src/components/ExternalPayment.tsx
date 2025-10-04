@@ -17,6 +17,7 @@ import {motion} from "motion/react";
 import useManualPayment from "@/hooks/useManualPayment";
 import type {AppointmentInterface} from "@/types";
 import {type JSX } from "react";
+import {useSettings} from "@/hooks/useSettings.tsx";
 
 interface ManualPaymentsProps {
     selectedAppointment: AppointmentInterface | null;
@@ -43,6 +44,7 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
         handleSubmit,
         loading
     } = useManualPayment({selectedAppointment});
+    const {allCurrencies}=useSettings()
     const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
     const start = selectedAppointment?.start_time;
     const end = selectedAppointment?.end_time;
@@ -78,8 +80,9 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                                 <strong>Hora:</strong> {start} - {end}
                             </li>
                             <li>
-                                <BadgeDollarSign className="inline mr-2 text-[#bd9554]"/>
-                                <strong>Precio:</strong> ${selectedAppointment.price}
+                                <BadgeDollarSign className="inline mr-2 text-[#bd9554]" />
+
+                                <strong>Precio:</strong> {allCurrencies?.currencies?.find(cur => cur.id === selectedAppointment.currency_id)?.code} {selectedAppointment.price}
                             </li>
                             <li>
                                 {status.icon}
@@ -108,6 +111,10 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                     formulario, nos pondremos en contacto contigo al
                     verificar el pago.
                 </p>
+                { loading ? <div className="flex flex-col items-center mt-6">
+                    <Loader2 className="animate-spin text-[#bd9554]" size={40}/>
+                    <p className="text-gray-600 mt-2">Enviando...</p>
+                </div> :
                 <form
                     onSubmit={handleSubmit}
                     className="w-full py-6 grid grid-cols-2 gap-4"
@@ -179,7 +186,7 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                             Enviar
                         </button>
                     </div>
-                </form>
+                </form>}
             </motion.div>
         </div>
     );

@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import type {AppointmentInterface} from "@/types";
 
 const buttonsActionsOfVerifyPayment = [
     {
@@ -32,11 +33,17 @@ const buttonsActionsOfVerifyPayment = [
         label: "Pendiente",
         value: "pendiente",
         style: "bg-yellow-500",
-        icon: <Clock className="w-4 h-4 inline mr-1" />
+        icon: <Clock className="w-4 h-4 inline mr-1"/>
+    },
+    {
+        label: "Reembolsado",
+        value: "reembolso",
+        style: "bg-orange-500",
+        icon: <Clock className="w-4 h-4 inline mr-1"/>
     }
 ]
 
-export default function ManagementOfManualPayment() {
+export default function ManagementOfManualPayment({selectedAppointment}:{selectedAppointment: AppointmentInterface | null}) {
     const {
         setIdManualPayment,
         showModal,
@@ -50,8 +57,15 @@ export default function ManagementOfManualPayment() {
         setNewStatusOfManualPayment,
         filter,
         setFilter,
-    } = useManualPayment();
-
+        loading
+    } = useManualPayment({selectedAppointment});
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
     return (
         <div className="container mx-auto px-4 py-6 ">
             <motion.div
@@ -103,6 +117,8 @@ export default function ManagementOfManualPayment() {
                                             <SelectItem value="pendiente">Pendiente</SelectItem>
                                             <SelectItem value="completado">Aprobado</SelectItem>
                                             <SelectItem value="fallido">Rechazado</SelectItem>
+                                            <SelectItem value="reembolsado">Reembolsado</SelectItem>
+                                            <SelectItem value="reembolso">Reembolso</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -120,14 +136,21 @@ export default function ManagementOfManualPayment() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
-                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%]"
+                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-56"
                             >
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
                                         {payment.client_name.slice(0, 25)}
                                     </h3>
                                     <span
-                                        className={`px-3 py-1 text-sm font-medium rounded-full flex justify-center items-center ${payment.status === "pendiente"
+                                        className={`px-3 py-1 text-sm font-medium rounded-full flex justify-center items-center ${
+                                                payment.status === "reembolsado"
+                                                    ? "bg-orange-100 text-orange-600"
+                                                    :
+                                                    payment.status === 'reembolso'
+                                                        ? "bg-purple-100 text-purple-600"
+                                                        :
+                                                payment.status === "pendiente"
                                                 ? "bg-yellow-100 text-yellow-600"
                                                 : payment.status === "completado"
                                                     ? "bg-green-100 text-green-600"

@@ -7,7 +7,7 @@ import PaymentInfoItem from './PaymentInfoItem';
 interface ModalOfManualPaymentToSeeDetailsProps {
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
     infoOfManualPaymentById: ManualPaymentByIdInterface | null;
-    setShowImageModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowImageModal?: React.Dispatch<React.SetStateAction<boolean>> | boolean;
     setNewStatusOfManualPayment: (status: string) => void;
     buttonsActionsOfVerifyPayment: {
         label: string;
@@ -59,6 +59,8 @@ export default function ModalOfManualPaymentToSeeDetails({
                             icon={Hash}
                             label="Referencia"
                             value={infoOfManualPaymentById.paymentAppointment.reference}
+                            className={'break-all'}
+
                         />
 
                         <PaymentInfoItem
@@ -121,7 +123,7 @@ export default function ModalOfManualPaymentToSeeDetails({
 
                             <button
                                 className="px-3 py-1 w-full h-10 bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                                onClick={() => setShowImageModal(true)}
+                                onClick={() => typeof setShowImageModal === "function" && setShowImageModal(true)}
                             >
                                 Ver imagen
                             </button>

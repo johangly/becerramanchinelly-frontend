@@ -80,6 +80,7 @@ export default function useStripe() {
 
     return {
         paymentData,
-        loading
+        loading,
+        appointmentId
     }
 }

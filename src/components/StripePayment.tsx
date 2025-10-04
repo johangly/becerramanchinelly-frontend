@@ -4,6 +4,7 @@ import {BadgeDollarSign, Calendar, CheckCircle, Clock, Loader2, XCircle} from "l
 import axios from "axios";
 import toast from "react-hot-toast";
 import type {FormEvent, JSX} from "react";
+import {useSettings} from "@/hooks/useSettings.tsx";
 
 interface StripePaymentsProps {
     selectedAppointment: AppointmentInterface | null;
@@ -21,6 +22,7 @@ export default function StripePayment({selectedAppointment}: StripePaymentsProps
     const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
     const start = selectedAppointment?.start_time;
     const end = selectedAppointment?.end_time;
+    const {allCurrencies}=useSettings()
     const handleSubmitPaymentWithStripePayment = async (e:FormEvent): Promise<void> => {
         e.preventDefault();
 
@@ -72,7 +74,8 @@ export default function StripePayment({selectedAppointment}: StripePaymentsProps
                                 </li>
                                 <li>
                                     <BadgeDollarSign className="inline mr-2 text-[#bd9554]" />
-                                    <strong>Precio:</strong> ${selectedAppointment.price}
+
+                                    <strong>Precio:</strong> {allCurrencies?.currencies?.find(cur => cur.id === selectedAppointment.currency_id)?.symbol}    {selectedAppointment.price}
                                 </li>
                                 <li>
                                     {status.icon}

@@ -109,6 +109,7 @@ function LayoutHeader({ session }: { session: any }) {
     const unreadCount = notifications.filter((n: Notification) => !n.seen).length;
     const [notificationsDropdownOpen, setNotificationsDropdownOpen] = useState(false);
     // const [loading, setLoading] = useState(true);
+    console.log('desde notificaciones')
 
     function handleSelectNotification(notification:Notification) {
         setSelectedNotification(notification);
@@ -120,10 +121,9 @@ function LayoutHeader({ session }: { session: any }) {
         setShowNotificationModal(false);
         setSelectedNotification(null);
     }
-    console.log('selectedNotification:', selectedNotification)
-    console.log('showNotificationModal:', showNotificationModal)
-    console.log('notificationsDropdownOpen:', notificationsDropdownOpen)
+
     useEffect(() => {
+
         const fetchNotifications = async () => {
             if (session?.user?.id) {
                 try {
@@ -144,9 +144,7 @@ function LayoutHeader({ session }: { session: any }) {
 
         fetchNotifications();
     }, [session?.user?.id]);
-
-    console.log('notifications:', notifications)
-
+    
     return (
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
             <div className="mx-auto px-4 sm:px-6 lg:px-6">
@@ -168,6 +166,7 @@ function LayoutHeader({ session }: { session: any }) {
                             </p>
                         </div>
                     </motion.div>
+
                     <div className="flex items-center space-x-4">
                         <div className="flex items-center justify-center">
                             <SignedOut>
