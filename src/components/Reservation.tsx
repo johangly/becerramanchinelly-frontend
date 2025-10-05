@@ -16,7 +16,6 @@ import { es } from 'date-fns/locale';
 import { TZDate } from "@date-fns/tz";
 
 import { ChevronDownIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,12 +34,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {useSettings} from "@/hooks/useSettings.tsx";
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
 const AdminApp = () => {
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
     const [openDateSelector, setOpenDateSelector] = useState(false);
+    const {allSettings}=useSettings()
     const [formData, setFormData] = useState<AppointmentInterface>({
         id: 0,
         day: new TZDate(new Date(), ZONE),
@@ -64,8 +65,10 @@ const AdminApp = () => {
     const openAddModal = ({ name, fullDate }: { name: string; fullDate: Date }) => {
         // Mapeo de días de la semana (0: Domingo, 1: Lunes, ..., 6: Sábado)
         const weekDays = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+        const price = allSettings?.configs?.find(s=>s.key==='priceAppointment')?.value ? Number(allSettings.configs.find(s=>s.key==='priceAppointment')?.value):0
+        console.log(price)
 
-        // Extraer el nombre del día si es un objeto
+        //Extraer el nombre del día si es un objeto
         const dayString = name;
 
         // Obtener el índice del día seleccionado (0-6)
@@ -94,7 +97,7 @@ const AdminApp = () => {
             reservation_date: null, // Se establecerá cuando se haga la reserva
             status: 'disponible',
             isDeleted: false,
-            price: 0,
+            price: price,
         });
         setEditingId(null);
         setShowModal(true);

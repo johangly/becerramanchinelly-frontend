@@ -6,7 +6,7 @@ import Modal from "@/components/Modal.tsx";
 
 export const CreateLinkOfAppointment = () => {
     const {allMeetingPlatforms} = useSettings();
-    const {allAppointments, generateLinkWithMeet,urlMeet,setUrlMeet,setShowModal,showModal,saveLink,setIdOfAppointment} = useLinkAppointment();
+    const {allAppointments, generateLinkWithMeet,urlMeet,setUrlMeet,setShowModal,showModal,saveLink,setIdOfAppointment,loading} = useLinkAppointment();
     return (
         <div className="container mx-auto px-4 py-6">
             {
@@ -33,8 +33,9 @@ export const CreateLinkOfAppointment = () => {
                             </div>
                             <div className="flex justify-between items-center">
                                 <button
-                                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-300"
+                                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
                                     onClick={() => generateLinkWithMeet()}
+                                    disabled={loading}
                                 >
                                     Generar Link Con Google Meet
                                 </button>

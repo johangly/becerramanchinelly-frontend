@@ -1,4 +1,4 @@
-import {type MouseEvent, useCallback, useEffect, useState} from 'react'
+import { useCallback, useEffect, useState} from 'react'
 import {useSession} from "@clerk/clerk-react";
 import axios, {isAxiosError} from "axios";
 import toast from "react-hot-toast";
@@ -12,7 +12,6 @@ export default function useDashboardUser() {
     const [showModal, setShowModal] = useState(false);
     const [idAppointment, setIdAppointment] = useState<number | null>(null);
     const urlBackend = import.meta.env.VITE_API_BASE_URL;
-    const [platform,setPlatform]= useState<number | null>(null)
 
     const fetchData =
         useCallback(async () => {

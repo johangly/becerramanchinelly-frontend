@@ -15,11 +15,12 @@ const dataEmpty = {
 
 export const useSettings = () => {
     const [allPaymentsMethods, setAllPaymentsMethods] = useState<PaymentMethodResponseInterface | null>(null);
-    const [allMeetingPlatforms, setAllMeetingPlatforms] = useState< MeetingPlatformResponse | null>(null);
+    const [allMeetingPlatforms, setAllMeetingPlatforms] = useState<MeetingPlatformResponse | null>(null);
     const [allSettings, setAllSettings] = useState<ConfigsResponse | null>(null);
-    const [allCurrencies, setAllCurrencies] = useState<CurrenciesResponse | null >(null);
-    const [valueOfCurrencyMain, setValueOfCurrencyMain]=useState<string | null>(null);
+    const [allCurrencies, setAllCurrencies] = useState<CurrenciesResponse | null>(null);
+    const [valueOfCurrencyMain, setValueOfCurrencyMain] = useState<string | null>(null);
     const [valueOfPhone, setValueOfPhone] = useState<string | null>(null);
+    const [priceAppointment, setPriceAppointment] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState(dataEmpty)
@@ -38,7 +39,8 @@ export const useSettings = () => {
             placeholder: "Descripción de la plataforma",
             name: "description"
         }
-        ]
+    ]
+
     async function FetchAllPaymentsMethods() {
         setLoading(true);
         try {
@@ -54,10 +56,12 @@ export const useSettings = () => {
             setLoading(false);
         }
     }
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        const {name, value} = event.target;
+        setFormData({...formData, [name]: value});
     }
+
     async function FetchAllMeetingPlatforms() {
         setLoading(true);
         try {
@@ -72,6 +76,7 @@ export const useSettings = () => {
             setLoading(false);
         }
     }
+
     async function FetchAllSettings() {
         setLoading(true);
         try {
@@ -79,7 +84,7 @@ export const useSettings = () => {
                 `${urlBack}/config`
             );
             setAllSettings(response.data);
-            setValueOfCurrencyMain(response.data.configs.find((set:Config)=>set.key === 'currency')?.value);
+            setValueOfCurrencyMain(response.data.configs.find((set: Config) => set.key === 'currency')?.value);
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
@@ -87,7 +92,8 @@ export const useSettings = () => {
             setLoading(false);
         }
     }
-    async function    FetchAllCurrencies() {
+
+    async function FetchAllCurrencies() {
         setLoading(true);
         try {
             const response = await axios.get(
@@ -102,10 +108,11 @@ export const useSettings = () => {
             setLoading(false);
         }
     }
-    const changePhone =async () => {
-        const id = allSettings?.configs.find(set=> set.key==='phone')?.id
-        if(!id) return;
-        if(!valueOfPhone){
+
+    const changePhone = async () => {
+        const id = allSettings?.configs.find(set => set.key === 'phone')?.id
+        if (!id) return;
+        if (!valueOfPhone) {
             toast.error("Por favor, ingresa un número de teléfono válido")
             return;
         }
@@ -114,8 +121,8 @@ export const useSettings = () => {
                 value: valueOfPhone
             }
         })
-        const [data,error] = await catchError(promise)
-        if(!data){
+        const [data, error] = await catchError(promise)
+        if (!data) {
             toast.error(error)
             return;
         }
@@ -125,67 +132,94 @@ export const useSettings = () => {
 
 
     }
+    const changePrice = async () => {
+        const id = allSettings?.configs.find(set => set.key === 'priceAppointment')?.id
+        if (!id) return;
+        if (!priceAppointment) {
+            toast.error("Por favor, ingresa un precio válido")
+            return;
+        }
+        const promise = axios.put(`${urlBack}/config/${id}`, {
+            newValues: {
+                value: priceAppointment
+            }
+        })
+        const [data, error] = await catchError(promise)
+        if (!data) {
+            toast.error(error)
+            return;
+        }
+        toast.success("Precio actualizado correctamente")
+        setValueOfPhone(null)
+        await FetchAllSettings()
+
+
+    }
+
     async function RegisterNewMeetingPlatform() {
 
-        if(!formData.name || !formData.description){
+        if (!formData.name || !formData.description) {
             toast.error("Por favor, completa todos los campos");
             return;
         }
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${urlBack}/meetings`,
                 formData
             );
-                toast.success("Plataforma registrada correctamente")
-                FetchAllMeetingPlatforms()
-                setShowModal(false)
-                setFormData(dataEmpty)
+            toast.success("Plataforma registrada correctamente")
+            FetchAllMeetingPlatforms()
+            setShowModal(false)
+            setFormData(dataEmpty)
 
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
         }
     }
+
     async function FetchChangeStatusPaymentMethod(id: number, is_active: boolean) {
         try {
             await axios.put(
                 `${urlBack}/payment-methods/${id}`,
                 {is_active: !is_active}
+            );
 
-        );
-
-                toast.success("Estado del método de pago actualizado correctamente")
-                FetchAllPaymentsMethods()
+            toast.success("Estado del método de pago actualizado correctamente")
+            FetchAllPaymentsMethods()
 
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
         }
     }
+
     const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = event.target.value;
-        const id = allSettings?.configs.find(set => set.key==='currency')?.id
+        const id = allSettings?.configs.find(set => set.key === 'currency')?.id
         setValueOfCurrencyMain(selectedValue);
         try {
             await axios.put(
                 `${urlBack}/config/${id}`,
-                {newValues: {
+                {
+                    newValues: {
                         value: selectedValue
-                    }}
+                    }
+                }
             )
             toast.success("Moneda principal actualizada correctamente")
             await FetchAllSettings()
-        }catch (error) {
+        } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
         }
     }
+
     async function FetchChangeStatusPlatform(id: number, is_active: boolean) {
         try {
             await axios.put(
                 `${urlBack}/meetings/${id}`,
                 {is_active: !is_active}
-
             );
             toast.success("Estado del método de pago actualizado correctamente")
 
@@ -208,14 +242,14 @@ export const useSettings = () => {
         loading,
         FetchChangeStatusPaymentMethod,
         allMeetingPlatforms,
-        showModal, setShowModal,inputsRegisterPlatform,handleChange,formData,
-        RegisterNewMeetingPlatform,FetchChangeStatusPlatform,
+        showModal, setShowModal, inputsRegisterPlatform, handleChange, formData,
+        RegisterNewMeetingPlatform, FetchChangeStatusPlatform,
         allSettings,
         allCurrencies,
         setValueOfCurrencyMain,
         valueOfCurrencyMain,
         handleSelectChange,
-        valueOfPhone,changePhone,setValueOfPhone
+        valueOfPhone, changePhone, setValueOfPhone,changePrice,setPriceAppointment
 
     }
 

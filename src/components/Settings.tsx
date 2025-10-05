@@ -29,13 +29,14 @@ export const SettingsAdmin = () => {
         RegisterNewMeetingPlatform,
         FetchChangeStatusPlatform,
         allSettings,
-        allCurrencies, valueOfCurrencyMain, handleSelectChange, changePhone, setValueOfPhone
+        allCurrencies, valueOfCurrencyMain, handleSelectChange, changePhone, setValueOfPhone,changePrice,setPriceAppointment
     } = useSettings();
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         pagos: false,
         plataformas: false,
         monedas: false,
         telefono: false,
+        precio: false
     });
 
 
@@ -295,7 +296,7 @@ export const SettingsAdmin = () => {
 
                     </div>
                 </div>
-                <div className="w-full">
+                <div className="w-full mb-4">
                     <div className="flex justify-between items-center mb-4">
                         <span
                             className="text-lg font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
@@ -344,6 +345,56 @@ export const SettingsAdmin = () => {
                             </div>
                         </div>
 
+                    </div>
+                </div>
+                <div className="w-full">
+                    <div className="flex justify-between items-center mb-4">
+                        <span
+                            className="text-lg font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                            Precio de las citas
+                        </span>
+                        <button
+                            onClick={() => toggleSection("precio")}
+                            className="flex items-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+                            title={openSections.precio ? "Cerrar" : "Abrir"}
+                        >
+                            {openSections.precio ? <ChevronUp size={18}/> : <ChevronDown size={18}/>}
+                        </button>
+                    </div>
+                    <div
+                        className={`transition-all duration-500 overflow-hidden ${openSections.precio ? 'max-h-0' : 'max-h-screen'}`}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div
+                                className="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-gray-800 p-5 rounded-lg shadow flex flex-col gap-2">
+                                <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                                    {allSettings?.configs?.find(cur=> cur.key === 'currency' )?.value}{" "}{allSettings?.configs?.find(set => set.key === 'priceAppointment')?.value}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="text-green-500" size={18}/>
+                                    <span className="text-green-700 font-medium">Precio actual</span>
+                                </div>
+                            </div>
+                            <div
+                                className="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-gray-800 p-5 rounded-lg shadow flex flex-col gap-2"
+                            >
+                                <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                                    Cambia el precio de las citas
+                                </h3>
+                                <input
+                                    onChange={(e) => setPriceAppointment(parseFloat(e.target.value))}
+                                    className="w-full p-2 rounded-md bg-white"
+                                    placeholder="Nuevo precio"
+                                    type='number'
+                                />
+                                <button
+                                    className="w-full p-2 rounded-md bg-[#1e1e1e] text-white hover:bg-gray-800 transition mt-2"
+                                    onClick={
+                                        changePrice}
+                                >
+                                    Enviar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </motion.div>

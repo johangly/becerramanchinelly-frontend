@@ -10,6 +10,7 @@ export const useLinkAppointment = () => {
     const [urlMeet, setUrlMeet] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [idOfAppointment, setIdOfAppointment] = useState<number | null>(null);
+    const [loading,setLoading] = useState(false);
 
     async function fetchAppointments() {
         const promise = axios.get(`${urlBack}/appointments`);
@@ -40,6 +41,7 @@ export const useLinkAppointment = () => {
     }
 
     async function generateLinkWithMeet() {
+        setLoading(true)
         const handleMessage = async () => {
             await fetch(`http://localhost:3000/api/generate-link/generate-meet-link/${idOfAppointment}`, {
                 method: "POST",
@@ -58,14 +60,14 @@ export const useLinkAppointment = () => {
 
                     toast.error("No se pudo generar el link");
                 });
+            setLoading(false)
         }
-        const messageListener = (e:FormEvent) => {
-            handleMessage();
+        const messageListener = () => {
             window.removeEventListener("message", messageListener);
             clearInterval(interval);
             win?.close();
         };
-         window.addEventListener("message", handleMessage
+         window.addEventListener("message", messageListener
             , {once: true});
         const win = window.open(`${urlBack}/generate-link/auth`, "_blank", "width=500,height=600");
 
@@ -106,6 +108,6 @@ export const useLinkAppointment = () => {
         setUrlMeet,
         setShowModal, showModal,
         saveLink,
-        setIdOfAppointment
+        setIdOfAppointment,loading
     }
 };

@@ -8,9 +8,9 @@ export interface AppointmentInterface {
   status: 'disponible' | 'reservado' | 'completado' | 'cancelado';
   isDeleted: boolean;
   price: number;
-  currency_id: number;
-    meeting_link: string | null;
-    meetingPlatformId: number | null;
+  currency_id?: number;
+    meeting_link?: string | null;
+    meetingPlatformId?: number | null;
 }
 
 export interface DayInfo {
