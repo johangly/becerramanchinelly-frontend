@@ -64,12 +64,21 @@ export default function DashboardUser() {
                 ) : (
                     <div
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-items-center content-center w-[100%]">
-                        {appointmentsOfUser.paymentsOfUser.map((payment: PaymentOfUser) => {
-                            const dateWithHour = new Date(payment.Appointment.day).toLocaleDateString() + ' ' + payment.Appointment.start_time;
-
-                            const now = new Date()
-                            const diffMs = new Date(dateWithHour).getTime() - new Date(now).getTime();
+                            {appointmentsOfUser.paymentsOfUser.map((payment: PaymentOfUser) => {
+                            // Crear fecha de la cita en la zona horaria local
+                            const appointmentDate = new Date(payment.Appointment.day);
+                            const [hours, minutes, seconds] = payment.Appointment.start_time.split(':').map(Number);
+                            appointmentDate.setHours(hours, minutes, seconds);
+                            
+                            // Obtener la fecha actual en la misma zona horaria
+                            const now = new Date();
+                            
+                            // Calcular la diferencia en milisegundos
+                            const diffMs = appointmentDate.getTime() - now.getTime();
                             const diffHours = diffMs / (1000 * 60 * 60);
+                            
+                            // Verificar si faltan más de 8 horas para la cita
+                            const isMoreThan8Hours = diffHours > 8;
 
                             return (
                                 <motion.div
@@ -149,7 +158,7 @@ export default function DashboardUser() {
                                             </p>
                                         ) : null
                                     }
-                                    {(diffHours > 8) &&
+                                    {isMoreThan8Hours &&
                                         <>
                                             <motion.button
                                                 initial={{opacity: 0, scale: 0.95}}
