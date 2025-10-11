@@ -1,7 +1,7 @@
 import useManualPayment from "@/hooks/useManualPayment";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Modal from "./Modal";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, SearchIcon } from "lucide-react";
 import ModalOfManualPaymentToSeeDetails from "@/components/ModalOfManualPaymentToSeeDetails.tsx";
 import {
     Select,
@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import type {AppointmentInterface} from "@/types";
+import type { AppointmentInterface } from "@/types";
 
 const buttonsActionsOfVerifyPayment = [
     {
@@ -33,17 +33,17 @@ const buttonsActionsOfVerifyPayment = [
         label: "Pendiente",
         value: "pendiente",
         style: "bg-yellow-500",
-        icon: <Clock className="w-4 h-4 inline mr-1"/>
+        icon: <Clock className="w-4 h-4 inline mr-1" />
     },
     {
         label: "Reembolsado",
         value: "reembolso",
         style: "bg-orange-500",
-        icon: <Clock className="w-4 h-4 inline mr-1"/>
+        icon: <Clock className="w-4 h-4 inline mr-1" />
     }
 ]
 
-export default function ManagementOfManualPayment({selectedAppointment}:{selectedAppointment: AppointmentInterface | null}) {
+export default function ManagementOfManualPayment({ selectedAppointment }: { selectedAppointment: AppointmentInterface | null }) {
     const {
         setIdManualPayment,
         showModal,
@@ -58,7 +58,7 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
         filter,
         setFilter,
         loading
-    } = useManualPayment({selectedAppointment});
+    } = useManualPayment({ selectedAppointment });
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -73,10 +73,12 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
                 animate={{ y: 0, opacity: 1 }}
                 className="max-w-7xl w-full mx-auto rounded-lg flex flex-col items-center"
             >
-                {showModal && (
-                    <ModalOfManualPaymentToSeeDetails setShowModal={setShowModal} infoOfManualPaymentById={infoOfManualPaymentById} setShowImageModal={setShowImageModal} setNewStatusOfManualPayment={setNewStatusOfManualPayment} buttonsActionsOfVerifyPayment={buttonsActionsOfVerifyPayment}
-                    />
-                )}
+                <AnimatePresence>
+                    {showModal && (
+                        <ModalOfManualPaymentToSeeDetails setShowModal={setShowModal} infoOfManualPaymentById={infoOfManualPaymentById} setShowImageModal={setShowImageModal} setNewStatusOfManualPayment={setNewStatusOfManualPayment} buttonsActionsOfVerifyPayment={buttonsActionsOfVerifyPayment}
+                        />
+                    )}
+                </AnimatePresence>
                 {showImageModal && (
                     <Modal setShowModal={setShowImageModal} title="Comprobante de Pago">
                         <motion.div
@@ -99,15 +101,18 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
                     </Modal>
                 )}
                 <div className="max-md:flex-col max-md:items-start mb-6 flex items-center justify-between w-full">
-                    <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
-                        Gestión de Pagos Externos
-                    </h2>
+                <div className="space-y-2">
+                        <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                            Gestión de Pagos Externos
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400">En esta sección puedes gestionar los pagos externos realizados.</p>
+                    </div>
                     <div>
                         <div className="flex gap-4">
                             <Label htmlFor="status-select" className="px-1 flex-1 gap-3 flex flex-col justify-center items-start">
                                 Filtros
                                 <Select defaultValue={filter} onValueChange={(value) => setFilter(value)}>
-                                    <SelectTrigger id="status-select" className="w-full min-w-[180px]">
+                                    <SelectTrigger id="status-select" className="w-full min-w-[180px] bg-white">
                                         <SelectValue placeholder="Seleccionar estado" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -136,25 +141,24 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
-                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%] min-h-90"
+                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%]"
                             >
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+                                    <h3 className="text-lg truncate mr-4 font-semibold text-gray-800 dark:text-white">
                                         {payment.client_name.slice(0, 25)}
                                     </h3>
                                     <span
-                                        className={`px-3 py-1 text-sm font-medium rounded-full flex justify-center items-center ${
-                                                payment.status === "reembolsado"
-                                                    ? "bg-orange-100 text-orange-600"
-                                                    :
-                                                    payment.status === 'reembolso'
-                                                        ? "bg-purple-100 text-purple-600"
-                                                        :
+                                        className={`px-3 py-1 text-sm font-medium rounded-full flex justify-center items-center ${payment.status === "reembolsado"
+                                            ? "bg-orange-100 text-orange-600"
+                                            :
+                                            payment.status === 'reembolso'
+                                                ? "bg-purple-100 text-purple-600"
+                                                :
                                                 payment.status === "pendiente"
-                                                ? "bg-yellow-100 text-yellow-600"
-                                                : payment.status === "completado"
-                                                    ? "bg-green-100 text-green-600"
-                                                    : "bg-red-100 text-red-600"
+                                                    ? "bg-yellow-100 text-yellow-600"
+                                                    : payment.status === "completado"
+                                                        ? "bg-green-100 text-green-600"
+                                                        : "bg-red-100 text-red-600"
                                             }`}
                                     >
                                         {
@@ -173,8 +177,8 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
                                     <p>
                                         <strong>Monto:</strong> {payment.amount} {payment.currency}
                                     </p>
-                                    <p>
-                                        <strong>Referencia:</strong> <span className="text-wrap break-words">{payment.reference}</span>
+                                    <p className="truncate">
+                                        <strong>Referencia:</strong> <span className="truncate">{payment.reference}</span>
                                     </p>
                                     <p>
                                         <strong>Fecha:</strong>{" "}
@@ -205,11 +209,16 @@ export default function ManagementOfManualPayment({selectedAppointment}:{selecte
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
-                        className="overflow-hidden"
+                        className="overflow-hidden flex flex-col items-center justify-center mt-16"
                     >
-                        <p className="text-center text-gray-400 text-sm py-2">
+
+                        <div className="bg-gray-200 w-fit p-4 rounded-full border border-gray-200 mb-6">
+                            <SearchIcon className="w-8 h-8 mx-auto text-gray-400" />
+                        </div>
+                        <p className="text-center text-gray-600 text-lg mb-3">
                             No hay pagos manuales registrados
                         </p>
+                        <p className="text-sm text-center text-gray-500">cuando realicen un pago manual, aparecerá aquí</p>
                     </motion.div>
                 )}
             </motion.div>

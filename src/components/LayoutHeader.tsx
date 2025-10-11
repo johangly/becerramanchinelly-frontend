@@ -1,5 +1,5 @@
 import {AnimatePresence, motion} from "motion/react"
-import {SquareChartGantt, X} from "lucide-react"
+import {LoaderCircle, SquareChartGantt, X} from "lucide-react"
 import {Moon, Sun, Bell, CheckCircle, XCircle, AlertTriangle, Info, Eye} from "lucide-react"
 import {useTheme} from "../contexts/ThemeContext"
 import {useEffect, useState} from "react"
@@ -25,95 +25,15 @@ import {apiClient} from "@/api"
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
-// Datos simulados de notificaciones basados en el modelo
-// const mockNotifications: Notification[] = [
-//     // Notificación de éxito (pago recibido)
-//     {
-//         id: 1,
-//         title: 'Pago Recibido',
-//         body: 'Se ha recibido un pago por $1,500.00 MXN',
-//         type: 'success',
-//         seen: false,
-//         user_id: 1,
-//         payment_id: 123,
-//         createdAt: new Date('2025-09-22T10:30:00'),
-//         updatedAt: new Date('2025-09-22T10:30:00')
-//     },
-//     // Notificación informativa (cita próxima)
-//     {
-//         id: 2,
-//         title: 'Cita Próxima',
-//         body: 'Tienes una cita programada para mañana a las 10:00 AM con el Dr. Pérez',
-//         type: 'info',
-//         seen: false,
-//         user_id: 1,
-//         payment_id: null,
-//         createdAt: new Date('2025-09-22T09:15:00'),
-//         updatedAt: new Date('2025-09-22T09:15:00')
-//     },
-//     // Notificación de advertencia (recordatorio de pago)
-//     {
-//         id: 3,
-//         title: 'Recordatorio de Pago',
-//         body: 'Recuerda realizar el pago de tu próxima cita antes del 25 de Septiembre',
-//         type: 'warning',
-//         seen: true,
-//         user_id: 1,
-//         payment_id: 456,
-//         createdAt: new Date('2025-09-21T16:45:00'),
-//         updatedAt: new Date('2025-09-21T16:45:00')
-//     },
-//     // Notificación de error (pago fallido)
-//     {
-//         id: 4,
-//         title: 'Pago Fallido',
-//         body: 'Hubo un error al procesar tu pago. Por favor, verifica los datos de tu tarjeta',
-//         type: 'error',
-//         seen: false,
-//         user_id: 1,
-//         payment_id: 789,
-//         createdAt: new Date('2025-09-21T14:20:00'),
-//         updatedAt: new Date('2025-09-21T14:20:00')
-//     },
-//     // Otro tipo de notificación
-//     {
-//         id: 5,
-//         title: 'Nuevo Mensaje',
-//         body: 'Tienes un nuevo mensaje en el sistema. Por favor, revisa tu bandeja de entrada',
-//         type: 'other',
-//         seen: true,
-//         user_id: 1,
-//         payment_id: null,
-//         createdAt: new Date('2025-09-20T18:30:00'),
-//         updatedAt: new Date('2025-09-20T18:30:00')
-//     },
-//     // Notificación de confirmación
-//     {
-//         id: 6,
-//         title: 'Cita Confirmada',
-//         body: 'Tu cita para el 25 de Septiembre a las 15:00 ha sido confirmada exitosamente',
-//         type: 'success',
-//         seen: false,
-//         user_id: 1,
-//         payment_id: null,
-//         createdAt: new Date('2025-09-20T11:10:00'),
-//         updatedAt: new Date('2025-09-20T11:10:00')
-//     }
-// ];
-
 function LayoutHeader({session}: { session: any }) {
     const {isDark, toggleTheme} = useTheme();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
     const unreadCount = notifications.filter((n: Notification) => !n.seen).length;
-    const [notificationsDropdownOpen, setNotificationsDropdownOpen] = useState(false);
-    // const [loading, setLoading] = useState(true);
-    console.log('desde notificaciones')
-
+    const [loading, setLoading] = useState(false);
     function handleSelectNotification(notification: Notification) {
         setSelectedNotification(notification);
-        setNotificationsDropdownOpen(true);
         setShowNotificationModal(true);
     }
 
@@ -127,23 +47,41 @@ function LayoutHeader({session}: { session: any }) {
         const fetchNotifications = async () => {
             if (session?.user?.id) {
                 try {
-                    // setLoading(true);
+                    setLoading(true);
                     const response = await apiClient.get(`/notifications/${session.user.id}`);
                     console.log('response.data:', response.data);
                     if (response.data && response.data.notifications) {
                         setNotifications(response.data.notifications);
-
+                        setLoading(false);
                     }
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
+                    setLoading(false);
                 } finally {
-                    // setLoading(false);
+                    setLoading(false);
                 }
             }
         };
 
         fetchNotifications();
     }, [session?.user?.id]);
+
+    function proccessNotificationModalBody(notification: Notification) {
+        const body = notification.modalBody.split('\n');
+        const result: { [key: string]: string } = {};
+        body.forEach(element => {
+            let resultado = element.replaceAll("|", "").trimStart();
+            let [nombre, valor] = resultado.split(":");
+            if (typeof valor === 'string') {
+                const valorSinEspacios = valor.trimStart().trimEnd();
+                result[nombre] = valorSinEspacios;
+            }
+        });
+        return result
+    }
+
+    // console.log('selectedNotification', selectedNotification ? proccessNotificationModalBody(selectedNotification) : null);
+
 
     return (
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -178,7 +116,7 @@ function LayoutHeader({session}: { session: any }) {
                                 <UserButton/>
                             </SignedIn>
                         </div>
-                        <DropdownMenu open={notificationsDropdownOpen} onOpenChange={setNotificationsDropdownOpen}>
+                        <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <div
                                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors relative">
@@ -192,20 +130,6 @@ function LayoutHeader({session}: { session: any }) {
                                 </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
-                                onPointerDownOutside={(e) => {
-                                    console.log('onPointerDownOutside')
-                                }}
-                                onFocusOutside={(e) => {
-                                    console.log('onFocusOutside')
-                                }}
-                                onInteractOutside={(e) => {
-                                    // Aquí puedes agregar lógica condicional
-                                    if (selectedNotification === null && !showNotificationModal) {
-                                        setNotificationsDropdownOpen(false);
-                                    } else {
-                                        e.preventDefault();
-                                    }
-                                }}
                                 className="dark:bg-gray-800 p-0 min-w-[300px] w-full max-w-[400px] border-gray-200 dark:border-gray-700 max-h-[400px] relative"
                                 align="end" side="bottom">
                                 <DropdownMenuLabel
@@ -229,8 +153,13 @@ function LayoutHeader({session}: { session: any }) {
                                 <div className="p-1.5 space-y-1.5">
                                     {notifications.length > 0 ? notifications.map((notification) => (
                                         <NotificationItem key={notification.id} notification={notification}
-                                                          openModal={handleSelectNotification}/>
-                                    )) : (
+                                        openModal={handleSelectNotification}/>
+                                    )) : loading ? (
+                                        <div className="p-2 flex items-center justify-center space-x-2">
+                                            <LoaderCircle className="w-6 h-6 text-gray-500 animate-spin" />
+                                            <span className="text-gray-500">Cargando...</span>
+                                        </div>
+                                    ) : (
                                         <div className="p-2">
                                             <p className="text-gray-500 text-center">No hay notificaciones
                                                 pendientes</p>

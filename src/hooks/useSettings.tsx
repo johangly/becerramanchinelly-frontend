@@ -85,6 +85,8 @@ export const useSettings = () => {
             );
             setAllSettings(response.data);
             setValueOfCurrencyMain(response.data.configs.find((set: Config) => set.key === 'currency')?.value);
+            setPriceAppointment(response.data.configs.find((set: Config) => set.key === 'priceAppointment')?.value);
+            setValueOfPhone(response.data.configs.find((set: Config) => set.key === 'phone')?.value);
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
@@ -194,8 +196,8 @@ export const useSettings = () => {
         }
     }
 
-    const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedValue = event.target.value;
+    const handleSelectChange = async (event:string) => {
+        const selectedValue = event;
         const id = allSettings?.configs.find(set => set.key === 'currency')?.id
         setValueOfCurrencyMain(selectedValue);
         try {
@@ -249,6 +251,7 @@ export const useSettings = () => {
         setValueOfCurrencyMain,
         valueOfCurrencyMain,
         handleSelectChange,
+        priceAppointment,
         valueOfPhone, changePhone, setValueOfPhone,changePrice,setPriceAppointment
 
     }

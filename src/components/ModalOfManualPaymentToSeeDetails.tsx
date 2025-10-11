@@ -27,9 +27,7 @@ export default function ModalOfManualPaymentToSeeDetails({
     return (
         <Modal setShowModal={setShowModal} title="Detalles del Pago">
             {infoOfManualPaymentById ? (
-                <div className="space-y-3 flex flex-col w-full h-110 overflow-y-scroll">
-
-
+                <div className="space-y-3 flex flex-col w-full min-h-110 overflow-y-scroll">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-auto">
                         <PaymentInfoItem
                             icon={User}
@@ -106,7 +104,7 @@ export default function ModalOfManualPaymentToSeeDetails({
                             {buttonsActionsOfVerifyPayment.filter(b => b.value !== infoOfManualPaymentById.paymentAppointment.status).map((button) => (
                                 <button
                                     key={button.value}
-                                    className={`px-3 flex gap-2 items-center justify-center py-2 ${button.style} text-white rounded hover:opacity-90 transition-colors w-full`}
+                                    className={`px-3 flex gap-2 items-center justify-center py-2 ${button.style} text-white rounded hover:opacity-90 transition-colors w-full cursor-pointer hover:shadow-xl transition-shadow shadow-sm`}
                                     onClick={() => setNewStatusOfManualPayment(button.value)}
                                 >
                                     {button.icon}
@@ -122,7 +120,7 @@ export default function ModalOfManualPaymentToSeeDetails({
                         <div className="w-full flex flex-col items-center">
 
                             <button
-                                className="px-3 py-1 w-full h-10 bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                                className="px-3 py-1 w-full h-10 bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors cursor-pointer hover:shadow-xl transition-shadow shadow-sm"
                                 onClick={() => typeof setShowImageModal === "function" && setShowImageModal(true)}
                             >
                                 Ver imagen

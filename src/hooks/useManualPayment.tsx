@@ -45,11 +45,27 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
     const [newStatusOfManualPayment, setNewStatusOfManualPayment] = useState<string | null | undefined>(infoOfManualPaymentById?.paymentAppointment.status);
     const navigate = useNavigate();
     useEffect(() => {
-        if (filter === "all") {
-            setDataFiltered(allManualPayments)
-        } else {
-            const filtered = allManualPayments?.data.filter(payment => payment.status === filter && payment.appointment_id )
-            setDataFiltered({status: allManualPayments?.status || "", data: filtered || []})
+        if (allManualPayments) {
+            let filteredPayments = [...allManualPayments.data];
+            
+            // Ordenar por fecha más reciente primero
+            filteredPayments.sort((a, b) => {
+                const dateA = new Date(a.transactionDate).getTime();
+                const dateB = new Date(b.transactionDate).getTime();
+                return dateB - dateA; // Orden descendente (más reciente primero)
+            });
+            
+            // Aplicar filtro si es necesario
+            if (filter !== "all") {
+                filteredPayments = filteredPayments.filter(payment => 
+                    payment.status === filter && payment.appointment_id
+                );
+            }
+            
+            setDataFiltered({
+                status: allManualPayments.status,
+                data: filteredPayments
+            });
         }
     }, [allManualPayments, filter])
     const handleSubmitChangeStatusOfManualPayment = useCallback(async () => {

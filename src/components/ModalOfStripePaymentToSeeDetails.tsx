@@ -1,8 +1,9 @@
 import React from 'react'
 import { Calendar, CheckCircle, Clock, DollarSign, Hash, Mail, Phone, Scroll, User, XCircle } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 import Modal from "@/components/Modal.tsx";
 import PaymentInfoItem from './PaymentInfoItem';
-import type {PaymentAppointmentStripe} from "@/interfaces/stripeInterfaces.ts";
+import type { PaymentAppointmentStripe } from "@/interfaces/stripeInterfaces.ts";
 
 interface ModalOfManualPaymentToSeeDetailsProps {
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,22 +16,21 @@ interface ModalOfManualPaymentToSeeDetailsProps {
         icon: React.ReactNode;
     }[];
     handleSubmitChangeStatusOfManualPayment: (id: number) => Promise<void>
-
+    className?: string
 }
 
 export default function ModalOfStripePaymentToSeeDetails({
-                                                             setShowModal,
-                                                             infoOfStripePaymentById,
-                                                             setNewStatusOfStripePayment,
-                                                             buttonsActionsOfVerifyPayment,
+    className,
+    setShowModal,
+    infoOfStripePaymentById,
+    setNewStatusOfStripePayment,
+    buttonsActionsOfVerifyPayment,
     handleSubmitChangeStatusOfManualPayment
-                                                         }: ModalOfManualPaymentToSeeDetailsProps) {
+}: ModalOfManualPaymentToSeeDetailsProps) {
     return (
-        <Modal setShowModal={setShowModal} title="Detalles del Pago">
+        <Modal setShowModal={setShowModal} title="Detalles del Pago" className={className}>
             {infoOfStripePaymentById ? (
                 <div className="space-y-3 flex flex-col w-full h-110 overflow-y-scroll">
-
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-auto">
                         <PaymentInfoItem
                             icon={User}
@@ -80,17 +80,23 @@ export default function ModalOfStripePaymentToSeeDetails({
                                 <strong>Estado:</strong>
                             </p>
                             <span
-                                className={`px-4 flex items-center py-1 w-30 mx-auto h-8 flex justify-center items-center text-center text-sm font-medium rounded-full ${infoOfStripePaymentById.status === "pendiente"
-                                    ? "bg-yellow-100 text-yellow-600"
-                                    : infoOfStripePaymentById.status === "completado"
-                                        ? "bg-green-100 text-green-600"
-                                        : "bg-red-100 text-red-600"
-                                }`}
+                                className={twMerge(
+                                    "px-4 flex py-1 w-30 ml-6 mt-1 h-8 justify-center items-center text-center text-sm font-medium rounded-full",
+                                    infoOfStripePaymentById.status === "reembolsado" && "bg-orange-100 text-orange-600",
+                                    infoOfStripePaymentById.status === "reembolso" && "bg-purple-100 text-purple-600",
+                                    infoOfStripePaymentById.status === "pendiente" && "bg-yellow-100 text-yellow-600",
+                                    infoOfStripePaymentById.status === "completado" && "bg-green-100 text-green-600",
+                                    !["reembolsado", "reembolso", "pendiente", "completado"].includes(infoOfStripePaymentById.status) && "bg-red-100 text-red-600"
+                                )}
                             >
                                 {infoOfStripePaymentById.status === "pendiente" ? (
                                     <Clock className="w-4 h-4 inline mr-1" />
                                 ) : infoOfStripePaymentById.status === "completado" ? (
                                     <CheckCircle className="w-4 h-4 inline mr-1" />
+                                ) : infoOfStripePaymentById.status === "reembolsado" ? (
+                                    <XCircle className="w-4 h-4 inline mr-1" />
+                                ) : infoOfStripePaymentById.status === "reembolso" ? (
+                                    <Clock className="w-4 h-4 inline mr-1" />
                                 ) : (
                                     <XCircle className="w-4 h-4 inline mr-1" />
                                 )}
@@ -107,7 +113,7 @@ export default function ModalOfStripePaymentToSeeDetails({
                                 <button
                                     key={button.value}
                                     className={`px-3 flex gap-2 items-center justify-center py-2 ${button.style} text-white rounded hover:opacity-90 transition-colors w-full`}
-                                    onClick={() =>(
+                                    onClick={() => (
                                         setNewStatusOfStripePayment(button.value),
                                         handleSubmitChangeStatusOfManualPayment(infoOfStripePaymentById.id)
                                     )}

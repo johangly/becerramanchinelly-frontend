@@ -17,12 +17,12 @@ const PaymentInfoItem: React.FC<PaymentInfoItemProps> = ({
   return (
     <div className={className}>
       <p className="text-sm dark:text-gray-100 text-gray-700 flex items-center gap-2">
-        <Icon className="w-4 h-4 text-[#bd9554]" />
+        <Icon className="w-5 h-5 text-primary" />
         <strong>{label}:</strong>
       </p>
-      <span className="text-gray-900 dark:text-gray-100 text-ellipsis">
+      <p className="text-gray-900 dark:text-gray-100 text-ellipsis ml-7">
         {value}
-      </span>
+      </p>
     </div>
   );
 };
