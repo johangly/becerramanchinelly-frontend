@@ -83,6 +83,8 @@ export const useSettings = () => {
             const response = await axios.get(
                 `${urlBack}/config`
             );
+            console.log(response)
+
             setAllSettings(response.data);
             setValueOfCurrencyMain(response.data.configs.find((set: Config) => set.key === 'currency')?.value);
             setPriceAppointment(response.data.configs.find((set: Config) => set.key === 'priceAppointment')?.value);
@@ -128,9 +130,12 @@ export const useSettings = () => {
             toast.error(error)
             return;
         }
+        console.log(data.data.data.value)
+
         toast.success("Teléfono actualizado correctamente")
-        setValueOfPhone(null)
-        await FetchAllSettings()
+        setValueOfPhone(
+            data.data.data.value
+        )
 
 
     }
@@ -153,7 +158,6 @@ export const useSettings = () => {
         }
         toast.success("Precio actualizado correctamente")
         setValueOfPhone(null)
-        await FetchAllSettings()
 
 
     }
@@ -165,14 +169,26 @@ export const useSettings = () => {
             return;
         }
         try {
-            await axios.post(
+            const response = await axios.post(
                 `${urlBack}/meetings`,
                 formData
             );
+
             toast.success("Plataforma registrada correctamente")
-            FetchAllMeetingPlatforms()
             setShowModal(false)
             setFormData(dataEmpty)
+            setAllMeetingPlatforms(e =>
+                e
+                    ? {
+                        ...e,
+                        MeetingPlatforms: [...e.MeetingPlatforms, response.data.newMeetingPlatform],
+                        status: e.status
+                    }
+                    : {
+                        MeetingPlatforms: [response.data.newMeetingPlatform],
+                        status: ""
+                    }
+            )
 
         } catch (error) {
             if (isAxiosError(error))
@@ -182,14 +198,29 @@ export const useSettings = () => {
 
     async function FetchChangeStatusPaymentMethod(id: number, is_active: boolean) {
         try {
-            await axios.put(
+            const response = await axios.put(
                 `${urlBack}/payment-methods/${id}`,
                 {is_active: !is_active}
             );
+            console.log(response)
 
             toast.success("Estado del método de pago actualizado correctamente")
-            FetchAllPaymentsMethods()
-
+            setAllPaymentsMethods(e =>
+                e
+                    ? {
+                        ...e,
+                        data: (e.data ?? []).map(method =>
+                            response.data.paymentMethod.id === method.id
+                                ? response.data.paymentMethod
+                                : method
+                        ),
+                        status: e.status // Asegura que status esté presente
+                    }
+                    : {
+                        data: [response.data.paymentMethod],
+                        status: ""
+                    }
+            )
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
@@ -210,7 +241,6 @@ export const useSettings = () => {
                 }
             )
             toast.success("Moneda principal actualizada correctamente")
-            await FetchAllSettings()
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);
@@ -219,14 +249,22 @@ export const useSettings = () => {
 
     async function FetchChangeStatusPlatform(id: number, is_active: boolean) {
         try {
-            await axios.put(
+            const response = await axios.put(
                 `${urlBack}/meetings/${id}`,
                 {is_active: !is_active}
             );
+            console.log(response)
+
             toast.success("Estado del método de pago actualizado correctamente")
-
-            await FetchAllMeetingPlatforms()
-
+            setAllMeetingPlatforms(e => ({
+                ...e,
+                MeetingPlatforms: (e?.MeetingPlatforms ?? []).map(platform =>
+                    response.data.updatedMeetingPlatform.id === platform.id
+                        ? response.data.updatedMeetingPlatform
+                        : platform
+                ),
+                status: e?.status ?? ""
+            }))
         } catch (error) {
             if (isAxiosError(error))
                 toast.error(error.message);

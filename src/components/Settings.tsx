@@ -144,20 +144,6 @@ export const SettingsAdmin = () => {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            <button
-                                className="
-                                bg-blue-500 hover:bg-blue-600
-                                text-white
-                                font-semibold
-                                py-1.5
-                                px-4
-                                rounded
-                                cursor-pointer
-                            "
-                                onClick={() => setShowModal(true)}
-                            >
-                                Guardar
-                            </button>
 
                         </div>
                         <div className="flex items-center gap-2 w-full gap-4 mt-4">
