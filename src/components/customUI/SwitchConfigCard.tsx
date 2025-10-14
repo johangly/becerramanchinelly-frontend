@@ -38,7 +38,7 @@ export function SwitchConfigCard({
             )}
           </div>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 truncate">{description}</p>
+        <p className="text-gray-600 dark:text-gray-400 truncate ">{description.length > 40 ? `${description.slice(0, 50)}...` : description }</p>
       </div>
       <div className="flex items-center space-x-2">
         <Switch
