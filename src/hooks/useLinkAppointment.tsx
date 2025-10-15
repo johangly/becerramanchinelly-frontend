@@ -43,7 +43,7 @@ export const useLinkAppointment = () => {
     async function generateLinkWithMeet() {
         setLoading(true)
         const handleMessage = async () => {
-            await fetch(`http://localhost:3000/api/generate-link/generate-meet-link/${idOfAppointment}`, {
+            await fetch(`${urlBack}/generate-link/generate-meet-link/${idOfAppointment}`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
             })
