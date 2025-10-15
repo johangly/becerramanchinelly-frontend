@@ -3,11 +3,14 @@ import WeeklySchedule from '@/components/WeeklySchedule';
 import type {AppointmentInterface} from '@/types';
 import ArrowIcon from '@/components/icons/arrow';
 import {SignInButton, UserButton} from '@clerk/clerk-react';
+import { useSettings } from '@/hooks/useSettings';
 
 export const Home = ({goToNextStep, session}: {
     goToNextStep: (appointmentData: AppointmentInterface, step: number) => void,
     session: any
 }) => {
+    const {allSettings}=useSettings();
+    const phoneNumber = allSettings?.configs.find(config => config.key === 'phone')?.value;
     return (
         <motion.div
             initial={{opacity: 0}}
@@ -35,8 +38,12 @@ export const Home = ({goToNextStep, session}: {
                     <WeeklySchedule goToNextStep={goToNextStep}/>
                 </motion.div>
 
-                <div className="mt-8 text-center text-sm text-gray-500">
-                    <p>¿Necesitas ayuda? Contáctanos al +52 22222480015</p>
+                <div className="mt-8 text-center text-sm text-gray-500 flex items-center justify-center space-x-2">
+                    <p>¿Necesitas ayuda? Contáctanos al</p> <button className='px-4 py-2 bg-green-600 rounded-full text-white hover:bg-green-700' onClick={() => {
+                    window.open(`https://wa.me/${phoneNumber}`, '_blank');
+                }}>
+                        {phoneNumber}
+                    </button>
                 </div>
                 {session?.user ? (
                     <div className="mt-8 flex justify-center items-center w-full space-x-2">
