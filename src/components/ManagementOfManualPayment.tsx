@@ -90,7 +90,7 @@ export default function ManagementOfManualPayment({ selectedAppointment }: { sel
                             onClick={e => e.stopPropagation()}
                         >
                             <img
-                                src={`${import.meta.env.VITE_BASE_URL_IMAGES}/${infoOfManualPaymentById?.imageOfPayment[0].file_path}`}
+                                src={`${import.meta.env.VITE_BASE_URL_IMAGES}${infoOfManualPaymentById?.imageOfPayment[0].file_path}`}
                                 alt="Comprobante de pago grande"
                                 className={`rounded max-h-full transition-transform duration-300 cursor-zoom-in ${isZoomed ? "scale-150 z-10" : "scale-100"}`}
                                 onClick={() => setIsZoomed(!isZoomed)}
