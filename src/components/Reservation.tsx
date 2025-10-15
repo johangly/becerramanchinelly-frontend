@@ -183,7 +183,7 @@ const AdminApp = () => {
                         endDate: endDate?.toISOString()
                     }
                 });
-                if (response.status >= 200 && response.status < 300) {
+                if (Number(response.status) >= 200 && Number(response.status) < 300) {
                     // console.log('appointments', response.data);
                     setAppointments(response.data.appointments);
                     setLoading(false);
@@ -587,7 +587,7 @@ const AdminApp = () => {
                                         </motion.button>
                                     </div>
                                     {appointments && appointments.filter(appt => {
-                                        const apptDate = new Date(appt.day);
+                                        const apptDate = new TZDate(new Date(appt.day), ZONE);
                                         const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
                                         const targetDay = typeof day === 'string' ? day : day.name;
 
@@ -602,7 +602,8 @@ const AdminApp = () => {
                                     ) : (
                                         <ul className="space-y-8">
                                             {appointments
-                                                .filter(appt => {
+                                                    .filter(appt => {
+                                                    console.log(appt)
                                                     // Omitir citas eliminadas lógicamente
                                                     if (appt.isDeleted) return false;
 
@@ -614,7 +615,7 @@ const AdminApp = () => {
                                                         const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
                                                         return apptDay === targetDay.toUpperCase();
                                                     }
-
+                                                    
                                                     return (
                                                         apptDate.getDate() === day.date &&
                                                         apptDate.getMonth() === targetDate.getMonth() &&

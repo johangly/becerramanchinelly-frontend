@@ -22,6 +22,7 @@ import {SelectPlatfomOfAppointment} from "@/components/SelectPlatfomOfAppointmen
 
 
 function App() {
+    
     const {session} = useSession();
     const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
     const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);

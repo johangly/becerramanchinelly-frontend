@@ -66,19 +66,19 @@ function LayoutHeader({session}: { session: any }) {
         fetchNotifications();
     }, [session?.user?.id]);
 
-    function proccessNotificationModalBody(notification: Notification) {
-        const body = notification.modalBody.split('\n');
-        const result: { [key: string]: string } = {};
-        body.forEach(element => {
-            let resultado = element.replaceAll("|", "").trimStart();
-            let [nombre, valor] = resultado.split(":");
-            if (typeof valor === 'string') {
-                const valorSinEspacios = valor.trimStart().trimEnd();
-                result[nombre] = valorSinEspacios;
-            }
-        });
-        return result
-    }
+    // function proccessNotificationModalBody(notification: Notification) {
+    //     const body = notification.modalBody.split('\n');
+    //     const result: { [key: string]: string } = {};
+    //     body.forEach(element => {
+    //         let resultado = element.replaceAll("|", "").trimStart();
+    //         let [nombre, valor] = resultado.split(":");
+    //         if (typeof valor === 'string') {
+    //             const valorSinEspacios = valor.trimStart().trimEnd();
+    //             result[nombre] = valorSinEspacios;
+    //         }
+    //     });
+    //     return result
+    // }
 
     // console.log('selectedNotification', selectedNotification ? proccessNotificationModalBody(selectedNotification) : null);
 
