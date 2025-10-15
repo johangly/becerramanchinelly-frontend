@@ -79,27 +79,29 @@ export default function ManagementOfManualPayment({ selectedAppointment }: { sel
                         />
                     )}
                 </AnimatePresence>
-                {showImageModal && (
-                    <Modal setShowModal={setShowImageModal} title="Comprobante de Pago">
-                        <motion.div
-                            className="bg-white max-w-200 max-h-130 rounded-lg p-6 w-auto relative flex flex-col items-center cursor-zoom-in"
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <img
-                                src={`${import.meta.env.VITE_BASE_URL_IMAGES}${infoOfManualPaymentById?.imageOfPayment[0].file_path}`}
-                                alt="Comprobante de pago grande"
-                                className={`rounded max-h-full transition-transform duration-300 cursor-zoom-in ${isZoomed ? "scale-150 z-10" : "scale-100"}`}
-                                onClick={() => setIsZoomed(!isZoomed)}
+                <AnimatePresence>
+                    {showImageModal && (
+                        <Modal setShowModal={setShowImageModal} title="Comprobante de Pago">
+                            <motion.div
+                                className="bg-white max-w-200 max-h-130 rounded-lg p-6 w-auto relative flex flex-col items-center cursor-zoom-in"
+                                initial={{ scale: 0.95, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <img
+                                    src={`${import.meta.env.VITE_BASE_URL_IMAGES}${infoOfManualPaymentById?.imageOfPayment[0].file_path}`}
+                                    alt="Comprobante de pago grande"
+                                    className={`rounded max-h-full transition-transform duration-300 cursor-zoom-in ${isZoomed ? "scale-150 z-10" : "scale-100"}`}
+                                    onClick={() => setIsZoomed(!isZoomed)}
 
 
-                            />
-                        </motion.div>
-                    </Modal>
-                )}
+                                />
+                            </motion.div>
+                        </Modal>
+                    )}
+                </AnimatePresence>
                 <div className="max-md:flex-col max-md:items-start mb-6 flex items-center justify-between w-full">
                 <div className="space-y-2">
                         <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
