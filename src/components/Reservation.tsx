@@ -587,7 +587,7 @@ const AdminApp = () => {
                                         </motion.button>
                                     </div>
                                     {appointments && appointments.filter(appt => {
-                                        const apptDate = new Date(appt.day);
+                                        const apptDate = new TZDate(new Date(appt.day), ZONE);
                                         const targetDate = typeof day === 'string' ? new Date() : day.fullDate;
                                         const targetDay = typeof day === 'string' ? day : day.name;
 
