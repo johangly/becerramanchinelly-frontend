@@ -615,6 +615,12 @@ const AdminApp = () => {
                                                         const apptDay = apptDate.toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
                                                         return apptDay === targetDay.toUpperCase();
                                                     }
+                                                    console.log("||||||||||||| apptDate ||||||||||||")
+                                                    console.log(apptDate)
+                                                    console.log(apptDate.getDate())
+                                                    console.log("||||||||||||| day ||||||||||||")
+                                                    console.log(day)
+                                                    console.log(day.date)
                                                         console.log(apptDate.getDate() === day.date,apptDate.getMonth() === targetDate.getMonth(),apptDate.getFullYear() === targetDate.getFullYear())
                                                     return (
                                                         apptDate.getDate() === day.date &&
