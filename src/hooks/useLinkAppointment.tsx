@@ -51,11 +51,18 @@ export const useLinkAppointment = () => {
 
                         res.json())
                 .then((resData) => {
+                    console.log(resData.status === "redirect")
+                    if (resData.status === "redirect") {
+                        toast.error("Necesitas autenticarte de nuevo.");
+                        setLoading(false)
+                        return;
+                    }
                     setUrlMeet(resData.link)
                     toast.success("Link generado: " + resData.link);
 
                 })
                 .catch((err) => {
+
                     console.log(err)
 
                     toast.error("No se pudo generar el link");
