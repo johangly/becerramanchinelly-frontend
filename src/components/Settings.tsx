@@ -39,7 +39,7 @@ export const SettingsAdmin = () => {
         allCurrencies, valueOfCurrencyMain, handleSelectChange, changePhone, setValueOfPhone, changePrice, setPriceAppointment, priceAppointment, valueOfPhone
     } = useSettings();
     const [
-        openSections, 
+        openSections,
         // setOpenSections
     ] = useState<{ [key: string]: boolean }>({
         pagos: false,
@@ -133,7 +133,9 @@ export const SettingsAdmin = () => {
                         <div className="flex items-center gap-2 w-full gap-4 mt-4">
                             <span className="w-fit min-w-[110px]">Moneda Base</span>
                             <Select defaultValue={valueOfCurrencyMain ?? ''} onValueChange={(value) => handleSelectChange(value)}>
-                                <SelectTrigger id="status-select" className="min-w-[250px] pl-6 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:bg-white dark:focus:bg-gray-600/80">
+                                <SelectTrigger id="status-select" className="min-w-[250px] pl-6 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:bg-white dark:focus:bg-gray-600/80"
+                                value={valueOfCurrencyMain ?? ''}
+                                >
                                     <SelectValue placeholder="Seleccionar moneda" />
                                 </SelectTrigger>
                                 <SelectContent>
