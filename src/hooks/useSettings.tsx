@@ -83,7 +83,6 @@ export const useSettings = () => {
             const response = await axios.get(
                 `${urlBack}/config`
             );
-            console.log(response)
 
             setAllSettings(response.data);
             setValueOfCurrencyMain(response.data.configs.find((set: Config) => set.key === 'currency')?.value);
@@ -103,7 +102,6 @@ export const useSettings = () => {
             const response = await axios.get(
                 `${urlBack}/currencies`
             );
-
             setAllCurrencies(response.data);
         } catch (error) {
             if (isAxiosError(error))

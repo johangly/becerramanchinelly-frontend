@@ -1,3 +1,4 @@
+
 export interface Config {
     id: number;
     key: string;
@@ -14,6 +15,7 @@ export interface ConfigsResponse {
 interface Currency {
     id: number;
     code: string;
+    value:string
     name: string;
     symbol: string;
     decimal_places: number;
