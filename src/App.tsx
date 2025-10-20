@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import AdminApp from './components/Reservation';
 import {useSession} from '@clerk/clerk-react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import type {AppointmentInterface} from './types';
 import DashboardUser from './components/DashboardUser';
@@ -22,14 +22,27 @@ import {SelectPlatfomOfAppointment} from "@/components/SelectPlatfomOfAppointmen
 
 
 function App() {
-    
+
     const {session} = useSession();
     const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
+
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(
+        localStorage.getItem('selectedAppointment')
+            ? JSON.parse(localStorage.getItem('selectedAppointment') as string)
+            : null
+    );
     const navigate = useNavigate();
     const location = useLocation();
     const isHomePage = location.pathname === "/";
-
+    useEffect(() => {
+        localStorage.setItem('selectedAppointment', JSON.stringify(selectedAppointment));
+    }, [selectedAppointment]);
+    useEffect(() => {
+        const storedAppointment = localStorage.getItem('selectedAppointment');
+        if (storedAppointment) {
+            setSelectedAppointment(JSON.parse(storedAppointment));
+        }
+    }, []);
     function nextStep(appointmentData: AppointmentInterface) {
         setSelectedAppointment(appointmentData);
         navigate('/pago');
