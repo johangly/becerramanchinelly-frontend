@@ -23,8 +23,16 @@ interface ManualPaymentsProps {
 }
 
 export default function useManualPayment({selectedAppointment}: ManualPaymentsProps) {
-    const [formData, setFormData] = useState(dataEmpty);
-    const {session} = useSession();
+
+    const { session } = useSession();
+    const [formData, setFormData] = useState({
+		...dataEmpty,
+		amount: selectedAppointment
+			? String(selectedAppointment.price)
+            : "",
+        client_email: session?.user.emailAddresses[0]?.emailAddress || "",
+        client_name: session?.user.firstName + " " + session?.user.lastName || "",
+	});
     const [allManualPayments, setAllManualPayments] = useState<ManualPaymentResponseInterface |
         null>(null);
     const [paymentImage, setPaymentImage] = useState<File | null>(
@@ -47,21 +55,21 @@ export default function useManualPayment({selectedAppointment}: ManualPaymentsPr
     useEffect(() => {
         if (allManualPayments) {
             let filteredPayments = [...allManualPayments.data];
-            
+
             // Ordenar por fecha más reciente primero
             filteredPayments.sort((a, b) => {
                 const dateA = new Date(a.transactionDate).getTime();
                 const dateB = new Date(b.transactionDate).getTime();
                 return dateB - dateA; // Orden descendente (más reciente primero)
             });
-            
+
             // Aplicar filtro si es necesario
             if (filter !== "all") {
-                filteredPayments = filteredPayments.filter(payment => 
+                filteredPayments = filteredPayments.filter(payment =>
                     payment.status === filter && payment.appointment_id
                 );
             }
-            
+
             setDataFiltered({
                 status: allManualPayments.status,
                 data: filteredPayments

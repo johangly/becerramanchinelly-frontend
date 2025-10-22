@@ -173,7 +173,8 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                                     value={formData[name as keyof typeof formData] as string}
                                     onChange={handleChange}
                                     className="w-full shadow-sm bg-white border border-gray-200 mt-2 p-2 text-[#1e1e1e]"
-                                />
+                                    disabled={name === "amount"}
+                                        />
                             )}
                         </div>
                     ))}
