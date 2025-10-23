@@ -43,7 +43,8 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
         handleImageChange,
         handleSubmit,
         loading
-    } = useManualPayment({selectedAppointment});
+    } = useManualPayment({ selectedAppointment });
+    console.log(formData)
     const {allCurrencies}=useSettings()
     const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
     const start = selectedAppointment?.start_time;
