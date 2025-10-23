@@ -43,7 +43,8 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
         handleImageChange,
         handleSubmit,
         loading
-    } = useManualPayment({selectedAppointment});
+    } = useManualPayment({ selectedAppointment });
+    console.log(formData)
     const {allCurrencies}=useSettings()
     const date = new Date(selectedAppointment ? selectedAppointment.day : "").toLocaleDateString();
     const start = selectedAppointment?.start_time;
@@ -173,7 +174,8 @@ export default function ExternalPayment({selectedAppointment}: ManualPaymentsPro
                                     value={formData[name as keyof typeof formData] as string}
                                     onChange={handleChange}
                                     className="w-full shadow-sm bg-white border border-gray-200 mt-2 p-2 text-[#1e1e1e]"
-                                />
+                                    disabled={name === "amount"}
+                                        />
                             )}
                         </div>
                     ))}
