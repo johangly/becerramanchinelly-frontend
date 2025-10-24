@@ -1,16 +1,12 @@
 import {AnimatePresence, motion} from "motion/react"
 import {LoaderCircle, SquareChartGantt, X} from "lucide-react"
 import {Moon, Sun, Bell, CheckCircle, XCircle, AlertTriangle, Info, Eye} from "lucide-react"
-import {useTheme} from "../contexts/ThemeContext"
-import {useEffect, useState} from "react"
 import type {Notification} from "../types/notifications"
-
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,53 +14,27 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import {SignedIn, SignedOut, SignInButton, UserButton} from '@clerk/clerk-react';
 import {TZDate} from "react-day-picker"
-import {apiClient} from "@/api"
+import useHeader from "@/hooks/useHeader"
 
 const ZONE = import.meta.env.VITE_ZONE_TIME || 'America/Caracas';
 
+
 function LayoutHeader({session}: { session: any }) {
-    const {isDark, toggleTheme} = useTheme();
-    const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [showNotificationModal, setShowNotificationModal] = useState(false);
-    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
-    const unreadCount = notifications.filter((n: Notification) => !n.seen).length;
-    const [loading, setLoading] = useState(false);
-    function handleSelectNotification(notification: Notification) {
-        setSelectedNotification(notification);
-        setShowNotificationModal(true);
-    }
-
-    function handleCloseNotificationModal() {
-        setShowNotificationModal(false);
-        setSelectedNotification(null);
-    }
-
-    useEffect(() => {
-
-        const fetchNotifications = async () => {
-            if (session?.user?.id) {
-                try {
-                    setLoading(true);
-                    const response = await apiClient.get(`/notifications/${session.user.id}`);
-                    console.log('response.data:', response.data);
-                    if (response.data && response.data.notifications) {
-                        setNotifications(response.data.notifications);
-                        setLoading(false);
-                    }
-                } catch (error) {
-                    console.error('Error fetching notifications:', error);
-                    setLoading(false);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        fetchNotifications();
-    }, [session?.user?.id]);
+    const {
+		isDark,
+		toggleTheme,
+		notifications,
+		unreadCount,
+		loading,
+		handleSelectNotification,
+		handleCloseNotificationModal,
+		showNotificationModal,
+		selectedNotification,
+		markAsRead,
+		setShowNotificationModal,
+	} = useHeader(session);
 
     // function proccessNotificationModalBody(notification: Notification) {
     //     const body = notification.modalBody.split('\n');
@@ -79,9 +49,7 @@ function LayoutHeader({session}: { session: any }) {
     //     });
     //     return result
     // }
-
     // console.log('selectedNotification', selectedNotification ? proccessNotificationModalBody(selectedNotification) : null);
-
 
     return (
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -97,7 +65,7 @@ function LayoutHeader({session}: { session: any }) {
                         </div>
                         <div>
                             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                                Gestión de Asesorías
+                                Gestión de Citas
                             </h1>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Sistema de gestión de asesorías
@@ -138,10 +106,15 @@ function LayoutHeader({session}: { session: any }) {
                                     <div>
                                         <Tooltip>
                                             <TooltipTrigger>
-                                                <div
+                                                <button
+                                                    title="mark as read"
+                                                    onClick={() => {
+                                                        markAsRead(notifications.filter(n => !n.seen).map(n => n.id))
+
+                                                    }}
                                                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                                     <Eye className="w-5 h-5"/>
-                                                </div>
+                                                </button>
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p className="dark:text-gray-800 text-gray-100">Marcar todas como
@@ -193,13 +166,15 @@ function LayoutHeader({session}: { session: any }) {
                                     className="relative p-6 bg-white border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800 rounded-lg max-w-lg w-full">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold">Notificación</h2>
-                                <button onClick={() => handleCloseNotificationModal()}
+                                <button
+                                    title="close"
+                                    onClick={() => handleCloseNotificationModal()}
                                         className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200">
                                     <X className="w-5 h-5"/>
                                 </button>
                             </div>
                             <div className="mt-4">
-                                <p className="text-gray-600 dark:text-gray-300">{selectedNotification?.body}</p>
+                                <p className="text-gray-600 dark:text-gray-300">{selectedNotification?.modalBody}</p>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -259,13 +234,13 @@ function NotificationItem({notification, openModal}: {
     notification: Notification,
     openModal: (notification: Notification) => void
 }) {
+    const { markAsRead } = useHeader(null);
     return (
         <DropdownMenuItem
             className={`relative flex items-start p-3 space-x-3 cursor-pointer bg-gray-100 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!notification.seen ? 'bg-blue-50 dark:bg-blue-900/40' : ''}`}
             onClick={() => {
-                // Marcar como leída al hacer clic
-                // Aquí iría la lógica para actualizar el estado
                 openModal(notification);
+                markAsRead([notification.id]);
             }}
         >
             <div className="flex-shrink-0 mt-0.5">
