@@ -99,21 +99,24 @@ export const ManagementPaymentStripe = () => {
                     </div>
                 </div>
                 {dataFiltered && dataFiltered.paymentsAppointments.length > 0 ? (
-                    <div
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-items-center content-center w-[100%]">
+                    <ul className="w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                         {dataFiltered.paymentsAppointments.map((payment) => (
-                            <motion.div
+                            <motion.li
                                 key={payment.id}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                transition={{ duration: 0.3 }}
-                                className="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 w-[100%]"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                transition={{ duration: 0.2 }}
+                                className="px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                                onClick={() => {
+                                    fetchStripePaymentById(payment.id);
+                                    setShowModal(true);
+                                }}
                             >
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white truncate mr-4">
+                                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                    <span className="font-semibold text-gray-800 dark:text-white w-48 truncate">
                                         {payment.client_name.slice(0, 25)}
-                                    </h3>
+                                    </span>
                                     <span
                                         className={twMerge(
                                             "px-3 py-1 text-sm font-medium rounded-full flex justify-center items-center",
@@ -135,37 +138,35 @@ export const ManagementPaymentStripe = () => {
                                         }
                                         {payment.status}
                                     </span>
-                                </div>
-                                <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                                    <p>
+                                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate">
                                         <strong>Monto:</strong> {payment.amount} {payment.currency}
-                                    </p>
-                                    <p className="text-wrap break-words truncate">
-                                        <strong>Referencia:</strong> <span className="truncate">{payment.reference}</span>
-                                    </p>
-                                    <p>
-                                        <strong>Fecha:</strong>{" "}
-                                        {new Date(payment.transactionDate).toLocaleDateString()}
-                                    </p>
+                                    </span>
+                                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                                        <strong>Referencia:</strong> {payment.reference.slice(0, 25)}
+                                    </span>
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                                        <strong>Fecha:</strong> {new Date(payment.transactionDate).toLocaleDateString()}
+                                    </span>
+                                    <motion.button
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="mt-2 md:mt-0 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-300"
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            fetchStripePaymentById(payment.id);
+                                            setShowModal(true);
+                                        }}
+                                    >
+                                        Ver Detalles
+                                    </motion.button>
                                 </div>
-                                <motion.button
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="mt-4 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-300 w-full hover:shadow-md transition-shadow shadow-sm cursor-pointer"
-                                    onClick={() => {
-                                        fetchStripePaymentById(payment.id);
-                                        setShowModal(true);
-                                    }}
-                                >
-                                    Ver Detalles
-                                </motion.button>
-                            </motion.div>
+                            </motion.li>
                         ))}
-                    </div>
+                    </ul>
                 ) : (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
