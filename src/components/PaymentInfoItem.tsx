@@ -1,5 +1,5 @@
-import React from 'react';
-import type { LucideIcon } from 'lucide-react';
+import React from "react";
+import type { LucideIcon } from "lucide-react";
 
 interface PaymentInfoItemProps {
   icon: LucideIcon;
@@ -8,11 +8,11 @@ interface PaymentInfoItemProps {
   className?: string;
 }
 
-const PaymentInfoItem: React.FC<PaymentInfoItemProps> = ({ 
-  icon: Icon, 
-  label, 
+const PaymentInfoItem: React.FC<PaymentInfoItemProps> = ({
+  icon: Icon,
+  label,
   value,
-  className = '' 
+  className = "",
 }) => {
   return (
     <div className={className}>
