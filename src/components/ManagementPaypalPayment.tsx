@@ -5,7 +5,6 @@ import { Select, SelectGroup, SelectItem, SelectLabel } from './ui/select';
 import { SelectContent, SelectTrigger, SelectValue } from '@radix-ui/react-select';
 import { twMerge } from 'tailwind-merge';
 import { AnimatePresence, motion } from 'motion/react';
-import ModalOfStripePaymentToSeeDetails from './ModalOfStripePaymentToSeeDetails';
 import ModalOfPaypalPaymentToSeeDetails from './ModalOfPaypalPaymentToSeeDetails';
 
 const buttonsActionsOfVerifyPayment = [
@@ -36,7 +35,7 @@ const buttonsActionsOfVerifyPayment = [
     }
 ]
 export default function ManagementPaypalPayment() {
-    const { dataFiltered, loading,filter,setFilter, showModal,setShowModal, fetchPaypalPaymentById,infoPaypalPaymentById,setNewStatusOfPaypalPayment,handleSubmitChangeStatusOfManualPayment } = usePaypalPayment();
+    const { dataFiltered,filter,setFilter, showModal,setShowModal, fetchPaypalPaymentById,infoPaypalPaymentById,setNewStatusOfPaypalPayment,handleSubmitChangeStatusOfManualPayment } = usePaypalPayment();
     return (
         <div className="container mx-auto px-4 py-6 ">
             <AnimatePresence>

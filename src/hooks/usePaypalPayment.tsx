@@ -1,6 +1,5 @@
 import type { PaymentAppointmentStripe } from '@/interfaces/stripeInterfaces';
 import axios, { isAxiosError } from 'axios';
-import { set } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
@@ -13,7 +12,7 @@ export default function usePaypalPayment() {
     const [infoPaypalPaymentById, setInfoOfPaypalPaymentById] = useState<PaymentAppointmentStripe | null>(null);
     const [idPaypalPayment, setIdPaypalPayment] = useState<number | null>(null);
     const [newStatusOfPaypalPayment, setNewStatusOfPaypalPayment] = useState<string | null | undefined>(infoPaypalPaymentById?.status);
-    
+    console.log(idPaypalPayment)
     const handleSubmitChangeStatusOfManualPayment = useCallback(async (id:number) => {
         try {
             if (newStatusOfPaypalPayment && id) {

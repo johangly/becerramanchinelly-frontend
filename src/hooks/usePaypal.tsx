@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useEffectEvent, useRef, useState, type FormEvent } from "react";
-import axios, { isAxiosError } from "axios";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
 import { useLocation, useParams } from "react-router-dom";
 import type { PaypalCaptureResponse } from "@/interfaces/paypalInterfaces";
