@@ -1,5 +1,5 @@
 import React, {useState, useMemo} from 'react';
-import {CalendarDays, HandCoins, Settings} from 'lucide-react';
+import {CalendarDays, HandCoins, Settings,ClipboardClock} from 'lucide-react';
 import {useTheme} from '../contexts/ThemeContext.tsx';
 import {Toaster} from 'react-hot-toast';
 import type {MenuItem} from '../types';
@@ -51,6 +51,13 @@ export const Layout: React.FC<LayoutProps> = ({children}) => {
                 //   icon: GalleryVerticalEnd,
                 //   path: '/campaigns',
                 // },
+                {
+                    id:'appointments',
+                    label:'Gestión de Citas',
+                    icon: ClipboardClock,
+                    path: '/management-appointments',
+                    badge: 0
+                },
                 {
                     id: 'management-of-payment',
                     label: 'Gestión de pagos',

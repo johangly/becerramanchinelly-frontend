@@ -2,6 +2,7 @@ export interface ExternalPayment {
   id: number;
   user_id: number;
   appointment_id: number;
+  paymentMethodId: number;
   payment_method_id: number;
   amount: string;
   client_email: string;
@@ -9,6 +10,8 @@ export interface ExternalPayment {
   client_phone: string;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   currency: string;
   is_approved: boolean | null;
   notes: string;

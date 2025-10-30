@@ -19,6 +19,10 @@ import {ManagementPaymentStripe} from "@/components/managementPaymentStripe.tsx"
 import {SettingsAdmin} from "@/components/Settings.tsx";
 import {CreateLinkOfAppointment} from "@/components/CreateLinkOfAppointment.tsx";
 import {SelectPlatfomOfAppointment} from "@/components/SelectPlatfomOfAppointment.tsx";
+import ManagementOfAppointment from './components/ManagementOfAppointment';
+import PaypalPayment from './components/PaypalPayment';
+import PaypalSucces from './components/PaypalSucces';
+import PaypalCancel from './components/PaypalCancel';
 
 
 function App() {
@@ -81,6 +85,10 @@ function App() {
                                 }
                             />
                             <Route
+                                path='/management-appointments'
+                                element={<ManagementOfAppointment/>}
+                            />
+                            <Route
                             path='/meeting'
                             element={<CreateLinkOfAppointment/>}
                             />
@@ -123,6 +131,30 @@ function App() {
                                         </UserLayout>
                                     }
                                 />
+                                <Route
+                                    path="/payment/paypal"
+                                    element={
+                                        <UserLayout isHomePage={isHomePage}>
+                                            <PaypalPayment selectedAppointment={selectedAppointment} />
+                                        </UserLayout>
+                                    }
+                                    />
+                                <Route
+                                    path="/payment-paypal-success/:id"
+                                    element={
+                                        <UserLayout isHomePage={isHomePage}>
+                                            <PaypalSucces   />
+                                        </UserLayout>
+                                    }
+                                    />
+                                    <Route
+                                    path="/payment-paypal-cancel/:id"
+                                    element={
+                                        <UserLayout isHomePage={isHomePage}>
+                                            <PaypalCancel   />
+                                        </UserLayout>
+                                    }   
+                                    />
                                 <Route
                                     path="/canceled"
                                     element={

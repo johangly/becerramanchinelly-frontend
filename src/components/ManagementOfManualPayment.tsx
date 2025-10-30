@@ -211,6 +211,11 @@ export default function ManagementOfManualPayment({
 								}}
 							>
 								<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+									<span className="font-semibold text-gray-800 dark:text-white w-10 truncate">
+										{
+											payment.id
+										}
+									</span>
 									<span className="font-semibold text-gray-800 dark:text-white w-48 truncate">
 										{payment.client_name.slice(
 											0,

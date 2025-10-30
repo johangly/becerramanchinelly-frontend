@@ -603,7 +603,6 @@ const AdminApp = () => {
                                         <ul className="space-y-8">
                                             {appointments
                                                     .filter(appt => {
-                                                    console.log(appt)
                                                     // Omitir citas eliminadas lógicamente
                                                     if (appt.isDeleted) return false;
 
