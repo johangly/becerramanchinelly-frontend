@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useEffectEvent, useRef, useState, type FormEvent } from "react";
+import axios, { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useLocation, useParams } from "react-router-dom";
 import type { PaypalCaptureResponse } from "@/interfaces/paypalInterfaces";
@@ -14,7 +14,6 @@ export default function usePaypal() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tokenParam = searchParams.get("token");
-
   const hasCapturedRef = useRef(false);
 
   const createOrderOfPayment = async (

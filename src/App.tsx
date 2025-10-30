@@ -23,6 +23,7 @@ import ManagementOfAppointment from './components/ManagementOfAppointment';
 import PaypalPayment from './components/PaypalPayment';
 import PaypalSucces from './components/PaypalSucces';
 import PaypalCancel from './components/PaypalCancel';
+import ManagementPaypalPayment from './components/ManagementPaypalPayment';
 
 
 function App() {
@@ -76,6 +77,12 @@ function App() {
                                 path="/management-of-external-payment"
                                 element={
                                     <ManagementOfManualPayment selectedAppointment={selectedAppointment}/>
+                                }
+                            />
+                            <Route
+                                path='/management-of-paypal'
+                                element={
+                                    <ManagementPaypalPayment/>
                                 }
                             />
                             <Route
